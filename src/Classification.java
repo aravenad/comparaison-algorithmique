@@ -72,6 +72,12 @@ public class Classification {
             depeches.get(i).afficher();
         }
 
+        Categorie sports = new Categorie("sports");
+        sports.initLexique("./sports.txt");
+        System.out.printf("Lexique de la catégorie %s\n", sports.getNom());
+        for (int i = 0; i < sports.getLexique().size(); i++) {
+            System.out.printf("%s (score : %d)\n", sports.getLexique().get(i).getChaine(), sports.getLexique().get(i).getEntier());
+        }
     }
 
 

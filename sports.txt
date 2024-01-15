@@ -1,12 +1,12 @@
 athlète:3
 athlètes:3
-Mondial:2
+mondial:2
 dopage:1
 match:3
 jeu:2
 défendre:1
 joueur:2
-Tournoi:3
+tournoi:3
 classement:2
 Bleus:2
 maillot:2
@@ -24,7 +24,7 @@ boxeurs:3
 stades:3
 supporteurs:2
 gardien:2
-Coupe:2
+coupe:2
 finale:3
 saison:1
 nageurs:3
