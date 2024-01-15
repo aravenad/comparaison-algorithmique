@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Classification {uohg
+public class Classification {
 
 
     private static ArrayList<Depeche> lectureDepeches(String nomFichier) {
