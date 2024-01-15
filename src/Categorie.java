@@ -48,11 +48,11 @@ public class Categorie {
 
 
     //calcul du score d'une dépêche pour la catégorie
-    public static int score(Depeche d) {
+    public int score(Depeche d) {
         int i=0;
         int sc=0;
-        Categorie cat=new Categorie(d.getCategorie());
-        cat.initLexique("./"+d.getCategorie().toLowerCase()+".txt");
+        Categorie cat=new Categorie(this.nom);
+        cat.initLexique("./"+this.nom.toLowerCase()+".txt");
         while (i<d.getMots().size()){
             for (int y=0;y<cat.getLexique().size();y++) {
                 if (d.getMots().get(i).compareTo(cat.getLexique().get(y).getChaine())==0) {

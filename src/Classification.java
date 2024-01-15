@@ -42,6 +42,13 @@ public class Classification {
 
 
     public static void classementDepeches(ArrayList<Depeche> depeches, ArrayList<Categorie> categories, String nomFichier) {
+        int i=0;
+        while (i<categories.size()){
+            categories.get(i).getNom();
+            for (int y=0;y< depeches.size();y++){
+                if (depeches.get(y).getCategorie()==categories.get(i))
+            }
+        }
     }
 
 
