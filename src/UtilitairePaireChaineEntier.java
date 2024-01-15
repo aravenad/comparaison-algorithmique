@@ -2,7 +2,6 @@ import java.util.ArrayList;
 
 public class UtilitairePaireChaineEntier {
 
-
     public static int indicePourChaine(ArrayList<PaireChaineEntier> listePaires, String chaine) {
         int i=0;
         while (i< listePaires.size()&&listePaires.get(i).getChaine().compareTo(chaine)!=0){
@@ -17,7 +16,14 @@ public class UtilitairePaireChaineEntier {
     }
 
     public static int entierPourChaine(ArrayList<PaireChaineEntier> listePaires, String chaine) {
-        return 0;
+        // {} → {résultat = entier associé à la chaîne de caractères chaine dans listePaires si elle existe, 0 sinon}
+        int resultat = 0;
+        for (PaireChaineEntier paire : listePaires) {
+            if (paire.getChaine().equals(chaine)) {
+                resultat = paire.getEntier();
+            }
+        }
+        return resultat;
     }
 
     public static String chaineMax(ArrayList<PaireChaineEntier> listePaires) {

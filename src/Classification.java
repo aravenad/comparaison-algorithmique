@@ -75,8 +75,8 @@ public class Classification {
         System.out.println("chargement des dépêches");
         ArrayList<Depeche> depeches = lectureDepeches("./depeches.txt");
 
-        for (int i = 0; i < depeches.size(); i++) {
-            depeches.get(i).afficher();
+        for (Depeche depech : depeches) {
+            depech.afficher();
         }
 
         Categorie sports = new Categorie("sports");
@@ -85,6 +85,13 @@ public class Classification {
         for (int i = 0; i < sports.getLexique().size(); i++) {
             System.out.printf("%s (score : %d)\n", sports.getLexique().get(i).getChaine(), sports.getLexique().get(i).getEntier());
         }
+
+        // Testez la méthode entierPourChaine en demandant la saisie d’un mot à l’utilisateur et en affichant le poids
+        // associé dans le lexique chargé.
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("\nEntrez un mot : ");
+        String mot = scanner.nextLine();
+        System.out.printf("Le poids associé à %s est %d\n", mot, UtilitairePaireChaineEntier.entierPourChaine(sports.getLexique(), mot));
     }
 
 
