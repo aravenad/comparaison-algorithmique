@@ -16,7 +16,6 @@ public class UtilitairePaireChaineEntier {
     }
 
     public static int entierPourChaine(ArrayList<PaireChaineEntier> listePaires, String chaine) {
-        // {} → {résultat = entier associé à la chaîne de caractères chaine dans listePaires si elle existe, 0 sinon}
         int resultat = 0;
         for (PaireChaineEntier paire : listePaires) {
             if (paire.getChaine().equals(chaine)) {
@@ -27,7 +26,16 @@ public class UtilitairePaireChaineEntier {
     }
 
     public static String chaineMax(ArrayList<PaireChaineEntier> listePaires) {
-        return "SPORTS";
+        // {} → {résultat = la chaîne associée au plus grand entier de listePaires}
+        String resultat = "";
+        int max = 0;
+        for (PaireChaineEntier paire : listePaires) {
+            if (paire.getEntier() > max) {
+                max = paire.getEntier();
+                resultat = paire.getChaine();
+            }
+        }
+        return resultat;
     }
 
 
