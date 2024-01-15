@@ -1,6 +1,7 @@
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -41,8 +42,52 @@ public class Classification {
         return depeches;
     }
 
+    // À l'intérieur de la classe Classification
+    private static int getIndex(ArrayList<Categorie> categories, String nomCategorie) {
+        for (int i = 0; i < categories.size(); i++) {
+            if (categories.get(i).getNom().equalsIgnoreCase(nomCategorie)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 
     public static void classementDepeches(ArrayList<Depeche> depeches, ArrayList<Categorie> categories, String nomFichier) {
+        ArrayList<PaireChaineEntier> vScores = new ArrayList<>();
+        ArrayList<PaireChaineEntier> a = new ArrayList<>();
+        try {
+            FileWriter file = new FileWriter(nomFichier);
+            int[] correctesParCategorie = new int[categories.size()];
+            for (int n = 0; n < depeches.size(); n++) {
+                vScores.clear();
+                for (Categorie categorie : categories) {
+                    vScores.add(new PaireChaineEntier(categorie.getNom(), categorie.score(depeches.get(n))));
+                }
+                String cat = UtilitairePaireChaineEntier.chaineMax(vScores).toUpperCase();
+                file.write(depeches.get(n).getId() + ":" + cat + "\n");
+                int categorieIndex = getIndex(categories, depeches.get(n).getCategorie());
+                if (categorieIndex != -1 && categorieIndex < correctesParCategorie.length) {
+                    if (categories.get(categorieIndex).getNom().equalsIgnoreCase(cat)) {
+                        correctesParCategorie[categorieIndex]++;
+                    }
+                }
+            }
+            for (int i = 0; i < categories.size(); i++) {
+                String nomCategorie = categories.get(i).getNom();
+                int correctes = correctesParCategorie[i];
+                int totalDepeches = depeches.size();
+                a.add(new PaireChaineEntier(nomCategorie, correctes * 100 / totalDepeches));
+            }
+            for (PaireChaineEntier paire : a) {
+                file.write(paire.getChaine() + " : " + paire.getEntier() + "%\n");
+            }
+
+            file.close();
+            System.out.println("Votre saisie a été écrite avec succès dans fichier-sortie.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -69,9 +114,9 @@ public class Classification {
         System.out.println("chargement des dépêches");
         ArrayList<Depeche> depeches = lectureDepeches("./depeches.txt");
 
-        for (Depeche depeche : depeches) {
-            depeche.afficher();
-        }
+//        for (Depeche depeche : depeches) {
+//            depeche.afficher();
+//        }
 
         Categorie culture = new Categorie("culture");
         culture.initLexique("./culture.txt");
@@ -88,29 +133,34 @@ public class Classification {
         Categorie sports = new Categorie("sports");
         sports.initLexique("./sports.txt");
         System.out.printf("Lexique de la catégorie %s\n", sports.getNom());
-        for (int i = 0; i < sports.getLexique().size(); i++) {
-            System.out.printf("%s (score : %d)\n",
-                    sports.getLexique().get(i).getChaine(),
-                    sports.getLexique().get(i).getEntier());
-        }
+//        for (int i = 0; i < sports.getLexique().size(); i++) {
+//            System.out.printf("%s (score : %d)\n",
+//                    sports.getLexique().get(i).getChaine(),
+//                    sports.getLexique().get(i).getEntier());
+//        }
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("\nEntrez un mot : ");
-        String mot = scanner.nextLine();
-        System.out.printf("Le poids associé à %s est %d\n\n",
-                mot,
-                UtilitairePaireChaineEntier.entierPourChaine(sports.getLexique(), mot));
+//        Scanner scanner = new Scanner(System.in);
+//        System.out.print("\nEntrez un mot : ");
+//        String mot = scanner.nextLine();
+//        System.out.printf("Le poids associé à %s est %d\n\n",
+//                mot,
+//                UtilitairePaireChaineEntier.entierPourChaine(sports.getLexique(), mot));
 
         ArrayList<Categorie> vCategories = new ArrayList<>(Arrays.asList(culture, economie, environnementSciences, politique, sports));
-        ArrayList<PaireChaineEntier> vScores = new ArrayList<>();
-        for (Categorie categorie : vCategories) {
-            vScores.add(new PaireChaineEntier(categorie.getNom(), categorie.score(depeches.get((int) (Math.random() * 500)))));
-        }
-        for (PaireChaineEntier score : vScores) {
-            System.out.printf("Score de la catégorie %s : %d\n", score.getChaine(), score.getEntier());
-        }
-        System.out.println("Prédiction de la catégorie de la dépêche : " + depeches.get((int) (Math.random() * 500)).getId());
-        System.out.printf("La catégorie prédite est %s\n", UtilitairePaireChaineEntier.chaineMax(vScores).toUpperCase());
+//        ArrayList<PaireChaineEntier> vScores = new ArrayList<>();
+//        for (Categorie categorie : vCategories) {
+//            vScores.add(new PaireChaineEntier(categorie.getNom(), categorie.score(depeches.get((int) (Math.random() * 500)))));
+//        }
+//        for (PaireChaineEntier score : vScores) {
+//            System.out.printf("Score de la catégorie %s : %d\n", score.getChaine(), score.getEntier());
+//        }
+//        System.out.println("Prédiction de la catégorie de la dépêche : " + depeches.get((int) (Math.random() * 500)).getId());
+//        System.out.printf("La catégorie prédite est %s\n", UtilitairePaireChaineEntier.chaineMax(vScores).toUpperCase());
+//        System.out.printf("Le poids associé à %s est %d\n", mot, UtilitairePaireChaineEntier.entierPourChaine(sports.getLexique(), mot));
+
+        classementDepeches(depeches,vCategories,"fichier");
     }
+
+
 }
 
