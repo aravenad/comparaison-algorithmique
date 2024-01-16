@@ -232,12 +232,27 @@ public class Classification {
 //        System.out.printf("La catégorie prédite est %s\n", UtilitairePaireChaineEntier.chaineMax(vScores).toUpperCase());
 //        System.out.printf("Le poids associé à %s est %d\n", mot, UtilitairePaireChaineEntier.entierPourChaine(sports.getLexique(), mot));
 
+        ArrayList<Thread> threads = new ArrayList<>();
+
         System.out.println("\nGénération des nouveaux lexiques...");
-        generationLexique(depeches,"culture","./cultureAuto.txt");
-        generationLexique(depeches,"economie","./economieAuto.txt");
-        generationLexique(depeches,"environnement-sciences","./environnement-sciencesAuto.txt");
-        generationLexique(depeches,"politique","./politiqueAuto.txt");
-        generationLexique(depeches,"sports","./sportsAuto.txt");
+
+        threads.add(new Thread(() -> generationLexique(depeches, "culture", "./cultureAuto.txt")));
+        threads.add(new Thread(() -> generationLexique(depeches, "economie", "./economieAuto.txt")));
+        threads.add(new Thread(() -> generationLexique(depeches, "environnement-sciences", "./environnement-sciencesAuto.txt")));
+        threads.add(new Thread(() -> generationLexique(depeches, "politique", "./politiqueAuto.txt")));
+        threads.add(new Thread(() -> generationLexique(depeches, "sports", "./sportsAuto.txt")));
+
+        for (Thread thread : threads) {
+            thread.start();
+        }
+
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
         System.out.println("\nInitialisation des nouveaux lexiques...");
         culture.initLexique("./cultureAuto.txt");
