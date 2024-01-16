@@ -13,16 +13,13 @@ public class Categorie {
         this.nom = nom;
     }
 
-
     public String getNom() {
         return nom;
     }
 
-
     public  ArrayList<PaireChaineEntier> getLexique() {
         return lexique;
     }
-
 
     // initialisation du lexique de la catégorie à partir du contenu d'un fichier texte
     public void initLexique(String nomFichier) {
@@ -40,28 +37,24 @@ public class Categorie {
                 this.lexique.add(paire);
             }
             scanner.close();
+            System.out.printf("%s initialisé.\n", nomFichier);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
-    //calcul du score d'une dépêche pour la catégorie
     public int score(Depeche d) {
-        int i = 0;
-        int sc = 0;
-        Categorie cat = new Categorie(this.nom);
-        cat.initLexique("./" + this.nom.toLowerCase() + ".txt");
-        while (i < d.getMots().size()) {
-            for (int y = 0; y < cat.getLexique().size(); y++) {
-                if (d.getMots().get(i).compareTo(cat.getLexique().get(y).getChaine()) == 0) {
-                    sc += cat.getLexique().get(y).getEntier();
+        // {} → {résultat = entier correspondant au score de la dépêche d pour la catégorie sur laquelle l’appel est
+        //                  réalisé. Pensez à utiliser l’attribut mots de la classe Depeche correspondant à un tableau
+        //                  contenant les mots de la dépêche.}
+        int score = 0;
+        for (String mot : d.getMots()) {
+            for (PaireChaineEntier paire : this.lexique) {
+                if (mot.equals(paire.getChaine())) {
+                    score += paire.getEntier();
                 }
             }
-            i++;
         }
-        return sc;
+        return score;
     }
-
-
 }

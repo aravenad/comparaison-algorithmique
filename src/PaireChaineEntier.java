@@ -16,4 +16,12 @@ public class PaireChaineEntier {
     public int getEntier() {
         return entier;
     }
+
+    // Mutateurs
+    public void setChaine(String chaine) {
+        this.chaine = chaine;
+    }
+    public void setEntier(int entier) {
+        this.entier = entier;
+    }
 }
