@@ -58,7 +58,7 @@ public class Classification {
         ArrayList<PaireChaineEntier> a = new ArrayList<>();
         try {
             FileWriter file = new FileWriter(nomFichier);
-            int[] correctesParCategorie = new int[categories.size()];
+            int[] co = new int[categories.size()];
             for (int n = 0; n < depeches.size(); n++) {
                 vScores.clear();
                 for (Categorie categorie : categories) {
@@ -67,15 +67,15 @@ public class Classification {
                 String cat = UtilitairePaireChaineEntier.chaineMax(vScores).toUpperCase();
                 file.write(depeches.get(n).getId() + ":" + cat + "\n");
                 int categorieIndex = getIndex(categories, depeches.get(n).getCategorie());
-                if (categorieIndex != -1 && categorieIndex < correctesParCategorie.length) {
+                if (categorieIndex != -1 && categorieIndex < co.length) {
                     if (categories.get(categorieIndex).getNom().equalsIgnoreCase(cat)) {
-                        correctesParCategorie[categorieIndex]++;
+                        co[categorieIndex]++;
                     }
                 }
             }
             for (int i = 0; i < categories.size(); i++) {
                 String nomCategorie = categories.get(i).getNom();
-                int correctes = correctesParCategorie[i];
+                int correctes = co[i];
                 int totalDepeches = depeches.size();
                 a.add(new PaireChaineEntier(nomCategorie, correctes * 100 / totalDepeches));
             }
