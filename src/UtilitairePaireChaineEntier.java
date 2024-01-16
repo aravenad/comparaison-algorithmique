@@ -44,6 +44,7 @@ public class UtilitairePaireChaineEntier {
         int moy=0;
         while (i<listePaires.size()){
             moy+=listePaires.get(i).getEntier();
+            i++;
         }
         return moy/i;
     }

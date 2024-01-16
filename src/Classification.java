@@ -42,23 +42,15 @@ public class Classification {
         return depeches;
     }
 
-    // À l'intérieur de la classe Classification
-    private static int getIndex(ArrayList<Categorie> categories, String nomCategorie) {
-        for (int i = 0; i < categories.size(); i++) {
-            if (categories.get(i).getNom().equalsIgnoreCase(nomCategorie)) {
-                return i;
-            }
-        }
-        return -1;
-    }
 
 
     public static void classementDepeches(ArrayList<Depeche> depeches, ArrayList<Categorie> categories, String nomFichier) {
         ArrayList<PaireChaineEntier> vScores = new ArrayList<>();
-        ArrayList<PaireChaineEntier> a = new ArrayList<>();
+        ArrayList<PaireChaineEntier> moy = new ArrayList<>();
+        ArrayList<String>catpredit=new ArrayList<>();
+        int cmp;
         try {
             FileWriter file = new FileWriter(nomFichier);
-            int[] co = new int[categories.size()];
             for (int n = 0; n < depeches.size(); n++) {
                 vScores.clear();
                 for (Categorie categorie : categories) {
@@ -66,23 +58,31 @@ public class Classification {
                 }
                 String cat = UtilitairePaireChaineEntier.chaineMax(vScores).toUpperCase();
                 file.write(depeches.get(n).getId() + ":" + cat + "\n");
-                int categorieIndex = getIndex(categories, depeches.get(n).getCategorie());
-                if (categorieIndex != -1 && categorieIndex < co.length) {
-                    if (categories.get(categorieIndex).getNom().equalsIgnoreCase(cat)) {
-                        co[categorieIndex]++;
-                    }
-                }
-            }
-            for (int i = 0; i < categories.size(); i++) {
-                String nomCategorie = categories.get(i).getNom();
-                int correctes = co[i];
-                int totalDepeches = depeches.size();
-                a.add(new PaireChaineEntier(nomCategorie, correctes * 100 / totalDepeches));
-            }
-            for (PaireChaineEntier paire : a) {
-                file.write(paire.getChaine() + " : " + paire.getEntier() + "%\n");
+                catpredit.add(cat);
             }
 
+            for (int p=0;p<categories.size();p++) {
+                cmp=0;
+                String nomcat=categories.get(p).getNom();
+                int i=0;
+                while (i < depeches.size()) {
+                    if (depeches.get(i).getCategorie().compareToIgnoreCase(nomcat) == 0) {
+                        if (depeches.get(i).getCategorie().compareToIgnoreCase(catpredit.get(i)) == 0) {
+                            cmp+=1;
+                        }
+                    }
+                    i++;
+                }
+                file.write(categories.get(p).getNom().toUpperCase()+" : "+cmp+"%"+"\n");
+                PaireChaineEntier calcmoy=new PaireChaineEntier(categories.get(p).getNom(),cmp);
+                moy.add(calcmoy);
+            }
+            for (int y=0;y<moy.size();y++) {
+                System.out.println(moy.get(y).getEntier());
+            }
+            int moyenne = (int) UtilitairePaireChaineEntier.moyenne(moy);
+            System.out.println(moyenne);
+            file.write("MOYENNE : "+moyenne+"%");
             file.close();
             System.out.println("Votre saisie a été écrite avec succès dans fichier-sortie.txt");
         } catch (IOException e) {
@@ -146,7 +146,7 @@ public class Classification {
 //                mot,
 //                UtilitairePaireChaineEntier.entierPourChaine(sports.getLexique(), mot));
 
-        ArrayList<Categorie> vCategories = new ArrayList<>(Arrays.asList(culture, economie, environnementSciences, politique, sports));
+        ArrayList<Categorie> vCategories = new ArrayList<>(Arrays.asList(environnementSciences, culture, economie, politique, sports));
 //        ArrayList<PaireChaineEntier> vScores = new ArrayList<>();
 //        for (Categorie categorie : vCategories) {
 //            vScores.add(new PaireChaineEntier(categorie.getNom(), categorie.score(depeches.get((int) (Math.random() * 500)))));
