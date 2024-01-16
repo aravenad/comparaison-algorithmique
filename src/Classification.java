@@ -77,11 +77,7 @@ public class Classification {
                 PaireChaineEntier calcmoy=new PaireChaineEntier(categories.get(p).getNom(),cmp);
                 moy.add(calcmoy);
             }
-            for (int y=0;y<moy.size();y++) {
-                System.out.println(moy.get(y).getEntier());
-            }
             int moyenne = (int) UtilitairePaireChaineEntier.moyenne(moy);
-            System.out.println(moyenne);
             file.write("MOYENNE : "+moyenne+"%");
             file.close();
             System.out.println("Votre saisie a été écrite avec succès dans fichier-sortie.txt");
