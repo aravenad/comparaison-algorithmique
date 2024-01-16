@@ -6,7 +6,6 @@ jérôme:2
 kerviel:3
 porte:2
 plainte:2
-pour:1
 faux:2
 usage:2
 avocat:2
@@ -17,7 +16,6 @@ sous:1
 statut:2
 témoin:2
 assisté:2
-dans:1
 affaire:2
 annoncé:2
 avoir:1
@@ -720,7 +718,6 @@ bâtiment:2
 optimistes:2
 adage:2
 quand:2
-tout:2
 vérifie:2
 conjoncture:2
 être:1
@@ -807,7 +804,6 @@ révélé:2
 versement:2
 engagée:2
 prendre:2
-toutes:2
 condamnations:2
 éventuelles:2
 viseraient:2
@@ -945,7 +941,6 @@ perturbé:2
 système:2
 bancaire:2
 menacent:2
-toute:2
 bercy:2
 réviser:2
 christine:2

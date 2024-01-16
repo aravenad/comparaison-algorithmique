@@ -46,7 +46,6 @@ italie:1
 depuis:1
 interdiction:2
 fumer:2
-dans:1
 lieux:2
 publics:2
 pentagone:2
@@ -73,12 +72,10 @@ américaine:2
 plus:1
 éoliennes:2
 moins:2
-pour:1
 encourager:2
 éolien:2
 etat:1
 subventionne:2
-tout:1
 mais:1
 récente:2
 montre:2
@@ -412,7 +409,6 @@ contestée:2
 verts:2
 greenpeace:2
 inventée:2
-toutes:2
 pièces:2
 biologie:2
 synthétique:2
@@ -872,7 +868,6 @@ antidépresseurs:2
 équipe:1
 anglo-saxons:2
 rassemblé:2
-tous:2
 essais:2
 existants:2
 quatre:2

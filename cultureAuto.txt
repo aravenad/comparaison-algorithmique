@@ -2,8 +2,6 @@ lyrique:2
 invite:2
 arte:2
 mezzo:2
-pour:1
-tous:2
 opéra:3
 point:1
 orgue:2
@@ -76,7 +74,6 @@ cire:2
 madame:2
 tussaud:2
 huitième:2
-dans:1
 monde:1
 troisième:1
 europe:1
@@ -607,7 +604,6 @@ acosta:2
 première:1
 parisienne:2
 micromonde:2
-tout:1
 recycle:2
 pris:1
 grande:1

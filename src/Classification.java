@@ -106,13 +106,14 @@ public class Classification {
                     }
                     if (!estPresent) {
                         PaireChaineEntier temp = new PaireChaineEntier(mot, 0);
-                        if (temp.getChaine().length() > 3
-                                && (temp.getChaine().compareToIgnoreCase("pour") != 0
-                                || temp.getChaine().compareToIgnoreCase("tous") != 0
-                                || temp.getChaine().compareToIgnoreCase("tout") != 0
-                                || temp.getChaine().compareToIgnoreCase("toute") != 0
-                                || temp.getChaine().compareToIgnoreCase("toutes") != 0
-                                || temp.getChaine().compareToIgnoreCase("dans") != 0)) {
+                        if (temp.getChaine().length() > 3 &&
+                                (!temp.getChaine().equalsIgnoreCase("pour") &&
+                                        !temp.getChaine().equalsIgnoreCase("tous") &&
+                                        !temp.getChaine().equalsIgnoreCase("tout") &&
+                                        !temp.getChaine().equalsIgnoreCase("toute") &&
+                                        !temp.getChaine().equalsIgnoreCase("toutes") &&
+                                        !temp.getChaine().equalsIgnoreCase("dans")))
+                        {
                             dico.add(temp);
                         }
                     }

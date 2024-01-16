@@ -10,7 +10,6 @@ annoncé:2
 mercredi:1
 février:1
 souhaitait:2
-tous:2
 voient:2
 confier:2
 mémoire:2
@@ -36,7 +35,6 @@ centriste:2
 jean-luc:2
 moudenc:2
 app-ump:2
-dans:1
 ville:2
 rose:1
 dirigée:2
@@ -74,7 +72,6 @@ ex-premier:2
 ministre:2
 signé:2
 appel:2
-pour:1
 vigilance:2
 républicaine:2
 rendu:2
@@ -1063,7 +1060,6 @@ défaite:2
 purgé:2
 sujets:2
 préoccupation:2
-toutes:1
 conditions:2
 réunies:2
 choses:2
@@ -1113,7 +1109,6 @@ volant:2
 formule:2
 course:2
 automobile:2
-tout:1
 calcul:2
 contrôle:2
 anticipation:2

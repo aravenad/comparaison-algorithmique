@@ -74,7 +74,6 @@ domicile:3
 score:2
 bordeaux:3
 perdu:1
-dans:1
 arrêts:2
 tsonga:2
 éliminé:2
@@ -132,7 +131,6 @@ opérette:2
 nations:3
 trois:1
 changements:2
-pour:1
 affronter:2
 angleterre:3
 après:1
