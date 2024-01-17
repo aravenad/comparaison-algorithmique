@@ -123,6 +123,26 @@ public class Classification {
         return dico;
     }
 
+    private static void triBullesAmeliore(ArrayList<String> v) {
+        int j;
+        int i = 0;
+        boolean onAPermute = true;
+        while (onAPermute) {
+            j = v.size() - 1;
+            onAPermute = false;
+            while (j > i) {
+                if (v.get(j).compareToIgnoreCase(v.get(j-1)) < 0) {
+                    String temporaire = v.get(j);
+                    v.set(j, v.get(j - 1));
+                    v.set(j - 1, temporaire);
+                    onAPermute = true;
+                }
+                j = j - 1;
+            }
+            i = i + 1;
+        }
+    }
+
     public static void calculScores(ArrayList<Depeche> depeches, String categorie, ArrayList<PaireChaineEntier> dictionnaire) {
         // {} → {met à jour les scores des mots présents dans dictionnaire. Lorsqu'un mot présent dans dictionnaire
         //       apparaît dans une dépêche de depeches, son score est : décrémenté si la dépêche n'est pas dans la
@@ -130,18 +150,22 @@ public class Classification {
         for (Depeche depeche : depeches) {
             if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
                 for (int i = 0; i < depeche.getMots().size(); i++) {
-                    for (PaireChaineEntier paire : dictionnaire) {
-                        if (paire.getChaine().compareToIgnoreCase(depeche.getMots().get(i)) == 0) {
-                            paire.setEntier(paire.getEntier() + 1);
+                    int inf = 0;
+                    int sup = depeches.get(i).getMots().size() - 1;
+                    int m = 0;
+                    while (inf < sup) {
+                        m = (inf + sup) / 2;
+                        triBullesAmeliore(depeches.get(i).getMots());
+                        if (depeches.get(i).getMots().get(m).compareToIgnoreCase(dictionnaire.get(m).getChaine()) >= 0) {
+                            sup = m;
+                        } else {
+                            inf = m + 1;
                         }
                     }
-                }
-            } else {
-                for (int i = 0; i < depeche.getMots().size(); i++) {
-                    for (PaireChaineEntier paire : dictionnaire) {
-                        if (paire.getChaine().compareToIgnoreCase(depeche.getMots().get(i)) == 0) {
-                            paire.setEntier(paire.getEntier() - 1);
-                        }
+                    if (depeches.get(i).getMots().get(sup).compareToIgnoreCase(dictionnaire.get(m).getChaine()) == 0) {
+                        dictionnaire.get(m).setEntier(dictionnaire.get(m).getEntier() + 1);
+                    } else {
+                        dictionnaire.get(m).setEntier(dictionnaire.get(m).getEntier() - 1);
                     }
                 }
             }
@@ -183,6 +207,7 @@ public class Classification {
     }
 
     public static void main(String[] args) {
+
 
         //Chargement des dépêches en mémoire
         System.out.println("Chargement des dépêches...\n");
@@ -231,6 +256,7 @@ public class Classification {
 //        System.out.println("Prédiction de la catégorie de la dépêche : " + depeches.get((int) (Math.random() * 500)).getId());
 //        System.out.printf("La catégorie prédite est %s\n", UtilitairePaireChaineEntier.chaineMax(vScores).toUpperCase());
 //        System.out.printf("Le poids associé à %s est %d\n", mot, UtilitairePaireChaineEntier.entierPourChaine(sports.getLexique(), mot));
+        long startTime = System.currentTimeMillis();
 
         ArrayList<Thread> threads = new ArrayList<>();
 
@@ -262,5 +288,8 @@ public class Classification {
         sports.initLexique("./sportsAuto.txt");
         ArrayList<Categorie> vCategoriesAuto = new ArrayList<>(Arrays.asList(environnementSciences, culture, economie, politique, sports));
         classementDepeches(depeches,vCategoriesAuto,"./outputAuto.txt");
+        System.out.println("============================");
+        long endTime = System.currentTimeMillis();
+        System.out.println("votre saisie a été réalisée en : " + (endTime-startTime) + "ms");
     }
 }

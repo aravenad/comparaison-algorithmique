@@ -8,6 +8,17 @@ public class Depeche {
     private String contenu;
     private ArrayList<String> mots;
 
+    private String categoriePredit;
+
+// ...
+
+    public String getCategoriePredit() {
+        return categoriePredit;
+    }
+
+    public void setCategoriePredit(String categoriePredit) {
+        this.categoriePredit = categoriePredit;
+    }
 
     public Depeche(String id, String date, String categorie, String contenu) {
         this.id = id;
