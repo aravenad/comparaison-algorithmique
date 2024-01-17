@@ -23,6 +23,8 @@ public class Categorie {
 
     // initialisation du lexique de la catégorie à partir du contenu d'un fichier texte
     public void initLexique(String nomFichier) {
+        // {initialise l'attribut lexique (une ArrayList<PaireChaineEntier>) à partir du fichier lexique dont le nom
+        //  nomFichier est passé en paramètre.}
         this.lexique = new ArrayList<>();
         try {
             FileInputStream file = new FileInputStream(nomFichier);
@@ -33,7 +35,7 @@ public class Categorie {
                 int indexDeuxPoints = ligne.indexOf(":");
                 String premierMot = ligne.substring(0, indexDeuxPoints);
                 String secondMot = ligne.substring(indexDeuxPoints + 1);
-                String trieNb = secondMot.replaceAll("[^0-9]", "");
+                String trieNb = secondMot.replaceAll("[^0-9]", ""); // enlève tous les caractères non numériques de secondMot
                 int nbTri = Integer.parseInt(trieNb);
                 PaireChaineEntier paire = new PaireChaineEntier(premierMot, nbTri);
                 this.lexique.add(paire);

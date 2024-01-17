@@ -1,7 +1,6 @@
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -25,9 +24,9 @@ public class Classification {
                 String categorie = ligne.substring(3);
                 ligne = scanner.nextLine();
                 String lignes = ligne.substring(3);
-                while (scanner.hasNextLine() && !ligne.equals("")) {
+                while (scanner.hasNextLine() && !ligne.isEmpty()) {
                     ligne = scanner.nextLine();
-                    if (!ligne.equals("")) {
+                    if (!ligne.isEmpty()) {
                         lignes = lignes + '\n' + ligne;
                     }
                 }
@@ -48,38 +47,38 @@ public class Classification {
         //       sur la classe ExempleEcritureFichier pour l’écriture dans un fichier.}
         ArrayList<PaireChaineEntier> vScores = new ArrayList<>();
         ArrayList<PaireChaineEntier> moy = new ArrayList<>();
-        ArrayList<String>catpredit=new ArrayList<>();
+        ArrayList<String> catPredite = new ArrayList<>();
         int cmp;
         try {
             FileWriter file = new FileWriter(nomFichier);
-            for (int n = 0; n < depeches.size(); n++) {
+            for (Depeche depeche : depeches) {
                 vScores.clear();
                 for (Categorie categorie : categories) {
-                    vScores.add(new PaireChaineEntier(categorie.getNom(), categorie.score(depeches.get(n))));
+                    vScores.add(new PaireChaineEntier(categorie.getNom(), categorie.score(depeche)));
                 }
                 String cat = UtilitairePaireChaineEntier.chaineMax(vScores).toUpperCase();
-                file.write(depeches.get(n).getId() + ":" + cat + "\n");
-                catpredit.add(cat);
+                file.write(depeche.getId() + ":" + cat + "\n");
+                catPredite.add(cat);
             }
 
-            for (int p=0;p<categories.size();p++) {
-                cmp=0;
-                String nomcat=categories.get(p).getNom();
-                int i=0;
+            for (Categorie category : categories) {
+                cmp = 0;
+                String nomCat = category.getNom();
+                int i = 0;
                 while (i < depeches.size()) {
-                    if (depeches.get(i).getCategorie().compareToIgnoreCase(nomcat) == 0) {
-                        if (depeches.get(i).getCategorie().compareToIgnoreCase(catpredit.get(i)) == 0) {
-                            cmp+=1;
+                    if (depeches.get(i).getCategorie().compareToIgnoreCase(nomCat) == 0) {
+                        if (depeches.get(i).getCategorie().compareToIgnoreCase(catPredite.get(i)) == 0) {
+                            cmp += 1;
                         }
                     }
                     i++;
                 }
-                file.write(categories.get(p).getNom().toUpperCase()+" : "+cmp+"%"+"\n");
-                PaireChaineEntier calcmoy=new PaireChaineEntier(categories.get(p).getNom(),cmp);
-                moy.add(calcmoy);
+                file.write(category.getNom().toUpperCase() + " : " + cmp + "%" + "\n");
+                PaireChaineEntier calcMoy = new PaireChaineEntier(category.getNom(), cmp);
+                moy.add(calcMoy);
             }
             int moyenne = (int) UtilitairePaireChaineEntier.moyenne(moy);
-            file.write("MOYENNE : "+moyenne+"%");
+            file.write("MOYENNE : " + moyenne + "%");
             file.close();
             System.out.printf("Classement généré avec succès dans %s\n", nomFichier);
         } catch (IOException e) {
@@ -124,6 +123,7 @@ public class Classification {
     }
 
     private static void triBullesAmeliore(ArrayList<String> v) {
+        // {} → {v est trié par ordre alphabétique croissant}
         int j;
         int i = 0;
         boolean onAPermute = true;
@@ -207,29 +207,31 @@ public class Classification {
     }
 
     public static void main(String[] args) {
-
-
         //Chargement des dépêches en mémoire
-        System.out.println("Chargement des dépêches...\n");
+        System.out.println("Chargement des dépêches...");
         ArrayList<Depeche> depeches = lectureDepeches("./depeches.txt");
 
+        // Affichage des dépêches
 //        for (Depeche depeche : depeches) {
 //            depeche.afficher();
 //        }
 
+        // Création des catégories
         Categorie culture = new Categorie("culture");
         Categorie economie = new Categorie("economie");
         Categorie environnementSciences = new Categorie("environnement-sciences");
         Categorie politique = new Categorie("politique");
         Categorie sports = new Categorie("sports");
 
-        System.out.println("Initialisation des lexiques...");
+        System.out.println("\nInitialisation des lexiques...");
         culture.initLexique("./culture.txt");
         economie.initLexique("./economie.txt");
         environnementSciences.initLexique("./environnement-sciences.txt");
         politique.initLexique("./politique.txt");
         sports.initLexique("./sports.txt");
         ArrayList<Categorie> vCategories = new ArrayList<>(Arrays.asList(environnementSciences, culture, economie, politique, sports));
+
+        System.out.println("\nGénération du classement des dépêches...");
         classementDepeches(depeches,vCategories,"./output.txt");
 
 //        System.out.printf("Lexique de la catégorie %s\n", sports.getNom());
@@ -256,22 +258,20 @@ public class Classification {
 //        System.out.println("Prédiction de la catégorie de la dépêche : " + depeches.get((int) (Math.random() * 500)).getId());
 //        System.out.printf("La catégorie prédite est %s\n", UtilitairePaireChaineEntier.chaineMax(vScores).toUpperCase());
 //        System.out.printf("Le poids associé à %s est %d\n", mot, UtilitairePaireChaineEntier.entierPourChaine(sports.getLexique(), mot));
+
+        // Calcul du temps d'exécution (début)
         long startTime = System.currentTimeMillis();
 
-        ArrayList<Thread> threads = new ArrayList<>();
-
         System.out.println("\nGénération des nouveaux lexiques...");
-
+        ArrayList<Thread> threads = new ArrayList<>();
         threads.add(new Thread(() -> generationLexique(depeches, "culture", "./cultureAuto.txt")));
         threads.add(new Thread(() -> generationLexique(depeches, "economie", "./economieAuto.txt")));
         threads.add(new Thread(() -> generationLexique(depeches, "environnement-sciences", "./environnement-sciencesAuto.txt")));
         threads.add(new Thread(() -> generationLexique(depeches, "politique", "./politiqueAuto.txt")));
         threads.add(new Thread(() -> generationLexique(depeches, "sports", "./sportsAuto.txt")));
-
         for (Thread thread : threads) {
             thread.start();
         }
-
         for (Thread thread : threads) {
             try {
                 thread.join();
@@ -287,9 +287,12 @@ public class Classification {
         politique.initLexique("./politiqueAuto.txt");
         sports.initLexique("./sportsAuto.txt");
         ArrayList<Categorie> vCategoriesAuto = new ArrayList<>(Arrays.asList(environnementSciences, culture, economie, politique, sports));
+
+        System.out.println("\nGénération du classement des dépêches...");
         classementDepeches(depeches,vCategoriesAuto,"./outputAuto.txt");
-        System.out.println("============================");
+
+        // Calcul du temps d'exécution (fin)
         long endTime = System.currentTimeMillis();
-        System.out.println("votre saisie a été réalisée en : " + (endTime-startTime) + "ms");
+        System.out.printf("\nTemps d'exécution du programme avec les nouveaux lexiques -> %dms.\n", (endTime-startTime));
     }
 }
