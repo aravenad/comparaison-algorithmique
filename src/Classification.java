@@ -146,7 +146,7 @@ public class Classification {
     public static void calculScores(ArrayList<Depeche> depeches, String categorie, ArrayList<PaireChaineEntier> dictionnaire) {
         for (Depeche depeche : depeches) {
             if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
-                triBullesAmeliore(depeche.getMots());  // Tri des mots de la dépeche
+                triBullesAmeliore(depeche.getMots());
                 for (int i = 0; i < depeche.getMots().size(); i++) {
                     for (PaireChaineEntier paire : dictionnaire) {
                         if (paire.getChaine().compareToIgnoreCase(depeche.getMots().get(i)) == 0) {
@@ -155,7 +155,7 @@ public class Classification {
                     }
                 }
             } else {
-                triBullesAmeliore(depeche.getMots());  // Tri des mots de la dépeche
+                triBullesAmeliore(depeche.getMots());
                 for (int i = 0; i < depeche.getMots().size(); i++) {
                     for (PaireChaineEntier paire : dictionnaire) {
                         if (paire.getChaine().compareToIgnoreCase(depeche.getMots().get(i)) == 0) {
@@ -266,6 +266,22 @@ public class Classification {
         threads.add(new Thread(() -> generationLexique(depeches, "environnement-sciences", "./environnement-sciencesAuto.txt")));
         threads.add(new Thread(() -> generationLexique(depeches, "politique", "./politiqueAuto.txt")));
         threads.add(new Thread(() -> generationLexique(depeches, "sports", "./sportsAuto.txt")));
+
+
+
+        System.out.println("\nInitialisation des nouveaux lexiques...");
+        culture.initLexique("./cultureAuto.txt");
+        economie.initLexique("./economieAuto.txt");
+        environnementSciences.initLexique("./environnement-sciencesAuto.txt");
+        politique.initLexique("./politiqueAuto.txt");
+        sports.initLexique("./sportsAuto.txt");
+        ArrayList<Categorie> vCategoriesAuto = new ArrayList<>(Arrays.asList(environnementSciences, culture, economie, politique, sports));
+        System.out.println("\nGénération du classement des dépêches...");
+
+
+        threads.add(new Thread(() -> classementDepeches(depeches,vCategoriesAuto,"./outputAuto.txt")));
+
+
         for (Thread thread : threads) {
             thread.start();
         }
@@ -276,17 +292,6 @@ public class Classification {
                 e.printStackTrace();
             }
         }
-
-        System.out.println("\nInitialisation des nouveaux lexiques...");
-        culture.initLexique("./cultureAuto.txt");
-        economie.initLexique("./economieAuto.txt");
-        environnementSciences.initLexique("./environnement-sciencesAuto.txt");
-        politique.initLexique("./politiqueAuto.txt");
-        sports.initLexique("./sportsAuto.txt");
-        ArrayList<Categorie> vCategoriesAuto = new ArrayList<>(Arrays.asList(environnementSciences, culture, economie, politique, sports));
-
-        System.out.println("\nGénération du classement des dépêches...");
-        classementDepeches(depeches,vCategoriesAuto,"./outputAuto.txt");
 
         // Calcul du temps d'exécution (fin)
         long endTime = System.currentTimeMillis();
