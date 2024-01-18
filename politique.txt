@@ -3,6 +3,8 @@ majorité:2
 scutin:2
 ministre:3
 Etat:2
+candidats:3
+conseils:3
 nazies:1
 Sarkozy:3
 correctionnelle:1
@@ -12,6 +14,7 @@ gaullistes:3
 liste:1
 centristes:3
 majorité:2
+campagne:3
 socialiste:3
 politique:3
 municipales:2
@@ -24,6 +27,7 @@ communiste:3
 projet:1
 droit:3
 nationale:2
+dénonce:3
 opposition:2
 député:3
 sénateur:3

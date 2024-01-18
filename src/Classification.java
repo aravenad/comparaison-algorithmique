@@ -203,14 +203,14 @@ public class Classification {
 //                    sports.getLexique().get(i).getChaine(),
 //                    sports.getLexique().get(i).getEntier());
 //        }
-
+//
 //        Scanner scanner = new Scanner(System.in);
 //        System.out.print("\nEntrez un mot : ");
 //        String mot = scanner.nextLine();
 //        System.out.printf("Le poids associé à %s est %d\n\n",
 //                mot,
 //                UtilitairePaireChaineEntier.entierPourChaine(sports.getLexique(), mot));
-
+//
 //        ArrayList<PaireChaineEntier> vScores = new ArrayList<>();
 //        for (Categorie categorie : vCategories) {
 //            vScores.add(new PaireChaineEntier(categorie.getNom(), categorie.score(depeches.get((int) (Math.random() * 500)))));
@@ -242,7 +242,7 @@ public class Classification {
         ArrayList<Categorie> vCategoriesAuto = new ArrayList<>(Arrays.asList(environnementSciences, culture, economie, politique, sports));
 
         System.out.println("Génération du classement des dépêches...");
-        classementDepeches(depeches,vCategoriesAuto,"./outputAuto.txt");
+        threads.add(new Thread(() -> classementDepeches(depeches,vCategoriesAuto,"./outputAuto.txt")));
         System.out.println("Classement des dépêches généré avec succès.");
 
         for (Thread thread : threads) {
