@@ -102,13 +102,11 @@ public class Classification {
         for (Depeche depeche : depeches) {
             if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
                 for (String mot : depeche.getMots()) {
-                    if (UtilitairePaireChaineEntier.indicePourChaine(dico,mot)!=-1) {
+                    if (UtilitairePaireChaineEntier.indicePourChaine(dico,mot) != -1) {
                         break;
                     }
                     PaireChaineEntier temp = new PaireChaineEntier(mot, 0);
-                    if (temp.getChaine().length() > 3 &&
-                            (!motsExclus.contains(temp.getChaine())))
-                    {
+                    if (temp.getChaine().length() > 3 && (!motsExclus.contains(temp.getChaine()))) {
                         dico.add(temp);
                     }
                 }
