@@ -144,33 +144,30 @@ public class Classification {
     }
 
     public static void calculScores(ArrayList<Depeche> depeches, String categorie, ArrayList<PaireChaineEntier> dictionnaire) {
-        // {} → {met à jour les scores des mots présents dans dictionnaire. Lorsqu'un mot présent dans dictionnaire
-        //       apparaît dans une dépêche de depeches, son score est : décrémenté si la dépêche n'est pas dans la
-        //       catégorie categorie et incrémenté si la dépêche est dans la catégorie categorie.}
         for (Depeche depeche : depeches) {
             if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
+                triBullesAmeliore(depeche.getMots());  // Tri des mots de la dépeche
                 for (int i = 0; i < depeche.getMots().size(); i++) {
-                    int inf = 0;
-                    int sup = depeches.get(i).getMots().size() - 1;
-                    int m = 0;
-                    while (inf < sup) {
-                        m = (inf + sup) / 2;
-                        triBullesAmeliore(depeches.get(i).getMots());
-                        if (depeches.get(i).getMots().get(m).compareToIgnoreCase(dictionnaire.get(m).getChaine()) >= 0) {
-                            sup = m;
-                        } else {
-                            inf = m + 1;
+                    for (PaireChaineEntier paire : dictionnaire) {
+                        if (paire.getChaine().compareToIgnoreCase(depeche.getMots().get(i)) == 0) {
+                            paire.setEntier(paire.getEntier() + 1);
                         }
                     }
-                    if (depeches.get(i).getMots().get(sup).compareToIgnoreCase(dictionnaire.get(m).getChaine()) == 0) {
-                        dictionnaire.get(m).setEntier(dictionnaire.get(m).getEntier() + 1);
-                    } else {
-                        dictionnaire.get(m).setEntier(dictionnaire.get(m).getEntier() - 1);
+                }
+            } else {
+                triBullesAmeliore(depeche.getMots());  // Tri des mots de la dépeche
+                for (int i = 0; i < depeche.getMots().size(); i++) {
+                    for (PaireChaineEntier paire : dictionnaire) {
+                        if (paire.getChaine().compareToIgnoreCase(depeche.getMots().get(i)) == 0) {
+                            paire.setEntier(paire.getEntier() - 1);
+                        }
                     }
                 }
             }
         }
     }
+
+
 
     public static int poidsPourScore(int score) {
         // {} → {résultat = une valeur de poids (1,2 ou 3) en fonction du score score
