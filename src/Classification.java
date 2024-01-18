@@ -107,12 +107,7 @@ public class Classification {
                     }
                     PaireChaineEntier temp = new PaireChaineEntier(mot, 0);
                     if (temp.getChaine().length() > 3 &&
-                            (!temp.getChaine().equalsIgnoreCase("pour") &&
-                                    !temp.getChaine().equalsIgnoreCase("tous") &&
-                                    !temp.getChaine().equalsIgnoreCase("tout") &&
-                                    !temp.getChaine().equalsIgnoreCase("toute") &&
-                                    !temp.getChaine().equalsIgnoreCase("toutes") &&
-                                    !temp.getChaine().equalsIgnoreCase("dans")))
+                            (!motsExclus.contains(temp.getChaine())))
                     {
                         dico.add(temp);
                     }
