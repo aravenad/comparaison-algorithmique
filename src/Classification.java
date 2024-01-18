@@ -15,7 +15,6 @@ public class Classification {
             // lecture du fichier d'entrée
             FileInputStream file = new FileInputStream(nomFichier);
             Scanner scanner = new Scanner(file);
-
             while (scanner.hasNextLine()) {
                 String ligne = scanner.nextLine();
                 String id = ligne.substring(3);
@@ -80,7 +79,6 @@ public class Classification {
             int moyenne = (int) UtilitairePaireChaineEntier.moyenne(moy);
             file.write("MOYENNE : " + moyenne + "%");
             file.close();
-            System.out.printf("Classement généré avec succès dans %s\n", nomFichier);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -115,8 +113,6 @@ public class Classification {
         return dico;
     }
 
-
-
     public static void calculScores(ArrayList<Depeche> depeches, String categorie, ArrayList<PaireChaineEntier> dictionnaire) {
         for (Depeche depeche : depeches) {
             if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
@@ -138,8 +134,6 @@ public class Classification {
             }
         }
     }
-
-
 
     public static int poidsPourScore(int score) {
         // {} → {résultat = une valeur de poids (1,2 ou 3) en fonction du score score
@@ -169,7 +163,6 @@ public class Classification {
                 file.write(paire.getChaine() + ":" + poidsPourScore(paire.getEntier()) + "\n");
             }
             file.close();
-            System.out.printf("Lexique généré avec succès dans %s\n", nomFichier);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -202,6 +195,7 @@ public class Classification {
 
         System.out.println("Génération du classement des dépêches...");
         classementDepeches(depeches,vCategories,"./output.txt");
+        System.out.println("Classement des dépêches généré avec succès.");
 
 //        System.out.printf("Lexique de la catégorie %s\n", sports.getNom());
 //        for (int i = 0; i < sports.getLexique().size(); i++) {
@@ -249,6 +243,7 @@ public class Classification {
 
         System.out.println("Génération du classement des dépêches...");
         classementDepeches(depeches,vCategoriesAuto,"./outputAuto.txt");
+        System.out.println("Classement des dépêches généré avec succès.");
 
         for (Thread thread : threads) {
             thread.start();

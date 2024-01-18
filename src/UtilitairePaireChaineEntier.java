@@ -22,6 +22,7 @@ public class UtilitairePaireChaineEntier {
             i = i + 1;
         }
     }
+
     public static int indicePourChaine(ArrayList<PaireChaineEntier> listePaires, String chaine) {
         // {} → {résultat = indice de chaine dans listePaires si chaine est présente et -1 sinon via recherche dichotomique}
         triBullesAmeliore(listePaires);

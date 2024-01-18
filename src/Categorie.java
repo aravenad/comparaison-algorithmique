@@ -29,7 +29,6 @@ public class Categorie {
         try {
             FileInputStream file = new FileInputStream(nomFichier);
             Scanner scanner = new Scanner(file);
-
             while (scanner.hasNextLine()) {
                 String ligne = scanner.nextLine();
                 int indexDeuxPoints = ligne.indexOf(":");
