@@ -97,6 +97,9 @@ public class Classification {
         motsExclus.add("toute");
         motsExclus.add("toutes");
         motsExclus.add("dans");
+        motsExclus.add("avec");
+        motsExclus.add("sans");
+        motsExclus.add("sous");
         for (Depeche depeche : depeches) {
             if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
                 for (String mot : depeche.getMots()) {

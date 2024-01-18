@@ -28,7 +28,6 @@ attali:2
 augmentation:2
 augmenté:2
 automobiles:2
-avec:1
 avions:2
 avouant:2
 aériens:2
@@ -63,6 +62,7 @@ chevalier:2
 chez:2
 choisy-le-roi:2
 christian:2
+chômage:2
 cinq:1
 cohen:2
 collègue:2
@@ -132,7 +132,6 @@ eads:2
 embarrasse:2
 emploi:3
 emplois:3
-enchaînement:2
 encore:2
 engage:2
 entertainment:2
@@ -194,6 +193,7 @@ imprimerie:2
 impôts:2
 indemnité:2
 indemnités:2
+indicateur:2
 industrie:2
 inflation:3
 informateur:2
@@ -345,7 +345,6 @@ rescousse:2
 respecter:2
 ressentent:2
 restée:2
-retour:1
 retrouvée:2
 revenir:2
 riches:2
@@ -390,10 +389,10 @@ solution:2
 sont:1
 souhaite:2
 soupçonné:2
-sous:1
 soutenue:2
 spécialisé:2
 spécialisés:2
+studio:2
 subprimes:2
 suisse:3
 surfaces:2

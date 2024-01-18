@@ -9,10 +9,10 @@ affronter:2
 afrique:2
 agent:2
 alain:2
+alors:2
 ancic:2
 antidopage:2
 après:1
-après-wilkinson:2
 argentine:2
 arlésien:2
 arrière:2
@@ -26,7 +26,6 @@ audience:2
 autriche:2
 autrichiens:2
 avant:2
-avec:1
 bailly:2
 basket-ball:2
 battu:3
@@ -34,6 +33,7 @@ bautista:2
 bayern:2
 belgique:2
 bernard:3
+black:2
 blessures:2
 boudent:2
 boxe:2
@@ -77,6 +77,7 @@ diffusion:2
 discipline:2
 dopage:2
 dossier:2
+doublé:2
 droits:3
 débats:2
 décroche:2
@@ -112,6 +113,7 @@ france:2
 franck:2
 français:1
 française:1
+fred:2
 frédéric:2
 février:1
 galles:2
@@ -263,6 +265,7 @@ sportif:3
 sportifs:2
 sports:2
 stades:2
+stars:2
 steve:2
 steven:2
 supporteurs:2
@@ -284,6 +287,7 @@ tournoi:3
 transformer:2
 trezeguet:2
 tribunal:2
+troisième:2
 très:1
 tsonga:2
 tête:2

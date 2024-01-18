@@ -53,7 +53,6 @@ autour:2
 autre:2
 autrui:2
 avancées:2
-avec:1
 aviaire:2
 avoir:1
 back:2
@@ -96,7 +95,6 @@ chimiques:2
 chine:2
 chiots:2
 chirac:2
-cicatrise:2
 ciel:2
 cigarette:2
 ciment:2
@@ -114,6 +112,7 @@ commencé:2
 compenser:2
 composés:2
 conclu:2
+concourent:2
 concours:2
 concourt:2
 conduit:2
@@ -225,6 +224,7 @@ génériques:2
 génétiques:2
 habiter:2
 hausse:1
+haute:2
 hectares:2
 humain:2
 humains:2
@@ -372,6 +372,7 @@ progrès:2
 projets:2
 proportion:2
 prostate:2
+protection:2
 protégées:2
 prozac:2
 précoce:2
@@ -413,7 +414,6 @@ réunion:2
 révolution:2
 sables-d:2
 salon:3
-sans:2
 santé:2
 sarkozy:1
 sarthe:2
@@ -432,7 +432,6 @@ semaines:2
 sera:2
 servier:2
 seuils:2
-seul:1
 seuls:2
 signifiera:2
 signé:2
@@ -444,7 +443,6 @@ solutions:2
 sont:1
 souches:2
 souris:2
-sous:2
 sous-sol:2
 spationautes:2
 spectaculaires:2
@@ -517,9 +515,7 @@ york:2
 éco-quartier:2
 écologie:2
 écologistes:2
-élaboré:2
 élargit:2
-élastique:2
 élection:2
 éléphants:2
 élévation:2
