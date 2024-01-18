@@ -2,18 +2,45 @@ import java.util.ArrayList;
 
 public class UtilitairePaireChaineEntier {
 
+    private static void triBullesAmeliore(ArrayList<PaireChaineEntier> v) {
+        // {} → {v est trié par ordre alphabétique croissant}
+        int j;
+        int i = 0;
+        boolean onAPermute = true;
+        while (onAPermute) {
+            j = v.size() - 1;
+            onAPermute = false;
+            while (j > i) {
+                if (v.get(j).getChaine().compareToIgnoreCase(v.get(j-1).getChaine()) < 0) {
+                    PaireChaineEntier temporaire = v.get(j);
+                    v.set(j, v.get(j - 1));
+                    v.set(j - 1, temporaire);
+                    onAPermute = true;
+                }
+                j = j - 1;
+            }
+            i = i + 1;
+        }
+    }
     public static int indicePourChaine(ArrayList<PaireChaineEntier> listePaires, String chaine) {
         // {} → {résultat = indice de chaine dans listePaires si chaine est présente et -1 sinon}
-        int i = 0;
-        while (i < listePaires.size() && listePaires.get(i).getChaine().compareTo(chaine) != 0){
-            i++;
+        triBullesAmeliore(listePaires);
+        int inf = 0;
+        int sup = listePaires.size();
+        int m;
+        while (inf < sup) {
+            m = (inf + sup) / 2;
+            if (listePaires.get(m).getChaine().compareToIgnoreCase(chaine) >= 0) {
+                sup = m;
+            } else {
+                inf = m + 1;
+            }
         }
-        if (i == listePaires.size()){
-            return -1;
+        if (listePaires.get(sup).getChaine().compareToIgnoreCase(chaine) == 0) {
+            return sup;
         } else {
-            return i;
+            return -1;
         }
-
     }
 
     public static int entierPourChaine(ArrayList<PaireChaineEntier> listePaires, String chaine) {

@@ -3,6 +3,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Scanner;
 
 public class Classification {
@@ -91,30 +92,30 @@ public class Classification {
         //                  de la catégorie categorie. Attention, même si le mot est présent plusieurs fois, il ne doit
         //                  apparaître qu’une fois dans la ArrayList retournée. Dans les entiers, nous stockerons les
         //                  scores associés à chaque mot et dans un premier temps, nous initialiserons ce score à 0.}
-        ArrayList<PaireChaineEntier> dico = new ArrayList<>();
+    ArrayList<PaireChaineEntier> dico = new ArrayList<>();
+    HashSet<String> motsExclus = new HashSet<>();
+        motsExclus.add("pour");
+        motsExclus.add("tous");
+        motsExclus.add("tout");
+        motsExclus.add("toute");
+        motsExclus.add("toutes");
+        motsExclus.add("dans");
         for (Depeche depeche : depeches) {
             if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
                 for (String mot : depeche.getMots()) {
-                    boolean estPresent = false;
-
-                    for (PaireChaineEntier paire : dico) {
-                        if (paire.getChaine().compareToIgnoreCase(mot) == 0) {
-                            estPresent = true;
-                            break;
-                        }
+                    if (UtilitairePaireChaineEntier.indicePourChaine(dico,mot)!=-1) {
+                        break;
                     }
-                    if (!estPresent) {
-                        PaireChaineEntier temp = new PaireChaineEntier(mot, 0);
-                        if (temp.getChaine().length() > 3 &&
-                                (!temp.getChaine().equalsIgnoreCase("pour") &&
-                                        !temp.getChaine().equalsIgnoreCase("tous") &&
-                                        !temp.getChaine().equalsIgnoreCase("tout") &&
-                                        !temp.getChaine().equalsIgnoreCase("toute") &&
-                                        !temp.getChaine().equalsIgnoreCase("toutes") &&
-                                        !temp.getChaine().equalsIgnoreCase("dans")))
-                        {
-                            dico.add(temp);
-                        }
+                    PaireChaineEntier temp = new PaireChaineEntier(mot, 0);
+                    if (temp.getChaine().length() > 3 &&
+                            (!temp.getChaine().equalsIgnoreCase("pour") &&
+                                    !temp.getChaine().equalsIgnoreCase("tous") &&
+                                    !temp.getChaine().equalsIgnoreCase("tout") &&
+                                    !temp.getChaine().equalsIgnoreCase("toute") &&
+                                    !temp.getChaine().equalsIgnoreCase("toutes") &&
+                                    !temp.getChaine().equalsIgnoreCase("dans")))
+                    {
+                        dico.add(temp);
                     }
                 }
             }
@@ -122,31 +123,11 @@ public class Classification {
         return dico;
     }
 
-    private static void triBullesAmeliore(ArrayList<String> v) {
-        // {} → {v est trié par ordre alphabétique croissant}
-        int j;
-        int i = 0;
-        boolean onAPermute = true;
-        while (onAPermute) {
-            j = v.size() - 1;
-            onAPermute = false;
-            while (j > i) {
-                if (v.get(j).compareToIgnoreCase(v.get(j-1)) < 0) {
-                    String temporaire = v.get(j);
-                    v.set(j, v.get(j - 1));
-                    v.set(j - 1, temporaire);
-                    onAPermute = true;
-                }
-                j = j - 1;
-            }
-            i = i + 1;
-        }
-    }
+
 
     public static void calculScores(ArrayList<Depeche> depeches, String categorie, ArrayList<PaireChaineEntier> dictionnaire) {
         for (Depeche depeche : depeches) {
             if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
-                triBullesAmeliore(depeche.getMots());
                 for (int i = 0; i < depeche.getMots().size(); i++) {
                     for (PaireChaineEntier paire : dictionnaire) {
                         if (paire.getChaine().compareToIgnoreCase(depeche.getMots().get(i)) == 0) {
@@ -155,7 +136,6 @@ public class Classification {
                     }
                 }
             } else {
-                triBullesAmeliore(depeche.getMots());
                 for (int i = 0; i < depeche.getMots().size(); i++) {
                     for (PaireChaineEntier paire : dictionnaire) {
                         if (paire.getChaine().compareToIgnoreCase(depeche.getMots().get(i)) == 0) {
