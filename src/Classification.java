@@ -61,7 +61,6 @@ public class Classification {
                 file.write(depeche.getId() + ":" + cat + "\n");
                 catPredite.add(cat);
             }
-
             for (Categorie category : categories) {
                 cmp = 0;
                 String nomCat = category.getNom();
@@ -200,7 +199,7 @@ public class Classification {
         Categorie politique = new Categorie("politique");
         Categorie sports = new Categorie("sports");
 
-        System.out.println("\nInitialisation des lexiques...");
+        System.out.println("Initialisation des lexiques...");
         culture.initLexique("./culture.txt");
         economie.initLexique("./economie.txt");
         environnementSciences.initLexique("./environnement-sciences.txt");
@@ -208,7 +207,7 @@ public class Classification {
         sports.initLexique("./sports.txt");
         ArrayList<Categorie> vCategories = new ArrayList<>(Arrays.asList(environnementSciences, culture, economie, politique, sports));
 
-        System.out.println("\nGénération du classement des dépêches...");
+        System.out.println("Génération du classement des dépêches...");
         classementDepeches(depeches,vCategories,"./output.txt");
 
 //        System.out.printf("Lexique de la catégorie %s\n", sports.getNom());
@@ -237,7 +236,7 @@ public class Classification {
 //        System.out.printf("Le poids associé à %s est %d\n", mot, UtilitairePaireChaineEntier.entierPourChaine(sports.getLexique(), mot));
 
         // Calcul du temps d'exécution (début)
-        long startTime = System.currentTimeMillis();
+        long startTimeProcess = System.currentTimeMillis();
 
         System.out.println("\nGénération des nouveaux lexiques...");
         ArrayList<Thread> threads = new ArrayList<>();
@@ -247,20 +246,16 @@ public class Classification {
         threads.add(new Thread(() -> generationLexique(depeches, "politique", "./politiqueAuto.txt")));
         threads.add(new Thread(() -> generationLexique(depeches, "sports", "./sportsAuto.txt")));
 
-
-
-        System.out.println("\nInitialisation des nouveaux lexiques...");
+        System.out.println("Initialisation des nouveaux lexiques...");
         culture.initLexique("./cultureAuto.txt");
         economie.initLexique("./economieAuto.txt");
         environnementSciences.initLexique("./environnement-sciencesAuto.txt");
         politique.initLexique("./politiqueAuto.txt");
         sports.initLexique("./sportsAuto.txt");
         ArrayList<Categorie> vCategoriesAuto = new ArrayList<>(Arrays.asList(environnementSciences, culture, economie, politique, sports));
-        System.out.println("\nGénération du classement des dépêches...");
 
-
-        threads.add(new Thread(() -> classementDepeches(depeches,vCategoriesAuto,"./outputAuto.txt")));
-
+        System.out.println("Génération du classement des dépêches...");
+        classementDepeches(depeches,vCategoriesAuto,"./outputAuto.txt");
 
         for (Thread thread : threads) {
             thread.start();
@@ -274,7 +269,7 @@ public class Classification {
         }
 
         // Calcul du temps d'exécution (fin)
-        long endTime = System.currentTimeMillis();
-        System.out.printf("\nTemps d'exécution du programme avec les nouveaux lexiques -> %dms.\n", (endTime-startTime));
+        long endTimeProcess = System.currentTimeMillis();
+        System.out.printf("\nTemps d'exécution du programme avec les nouveaux lexiques -> %dms.\n", (endTimeProcess-startTimeProcess));
     }
 }

@@ -23,24 +23,23 @@ public class UtilitairePaireChaineEntier {
         }
     }
     public static int indicePourChaine(ArrayList<PaireChaineEntier> listePaires, String chaine) {
-        // {} → {résultat = indice de chaine dans listePaires si chaine est présente et -1 sinon}
+        // {} → {résultat = indice de chaine dans listePaires si chaine est présente et -1 sinon via recherche dichotomique}
         triBullesAmeliore(listePaires);
-        int inf = 0;
-        int sup = listePaires.size();
-        int m;
-        while (inf < sup) {
-            m = (inf + sup) / 2;
-            if (listePaires.get(m).getChaine().compareToIgnoreCase(chaine) >= 0) {
-                sup = m;
+        int resultat = -1;
+        int debut = 0;
+        int fin = listePaires.size() - 1;
+        while (debut <= fin) {
+            int milieu = (debut + fin) / 2;
+            if (listePaires.get(milieu).getChaine().equals(chaine)) {
+                resultat = milieu;
+                break;
+            } else if (listePaires.get(milieu).getChaine().compareToIgnoreCase(chaine) < 0) {
+                debut = milieu + 1;
             } else {
-                inf = m + 1;
+                fin = milieu - 1;
             }
         }
-        if (listePaires.get(sup).getChaine().compareToIgnoreCase(chaine) == 0) {
-            return sup;
-        } else {
-            return -1;
-        }
+        return resultat;
     }
 
     public static int entierPourChaine(ArrayList<PaireChaineEntier> listePaires, String chaine) {

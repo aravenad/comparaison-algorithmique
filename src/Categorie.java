@@ -35,7 +35,7 @@ public class Categorie {
                 int indexDeuxPoints = ligne.indexOf(":");
                 String premierMot = ligne.substring(0, indexDeuxPoints);
                 String secondMot = ligne.substring(indexDeuxPoints + 1);
-                String trieNb = secondMot.replaceAll("[^0-9]", ""); // enlève tous les caractères non numériques de secondMot
+                String trieNb = secondMot.replaceAll("[^0-9]", "");
                 int nbTri = Integer.parseInt(trieNb);
                 PaireChaineEntier paire = new PaireChaineEntier(premierMot, nbTri);
                 this.lexique.add(paire);
