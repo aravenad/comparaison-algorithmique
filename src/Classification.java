@@ -79,7 +79,7 @@ public class Classification {
         }
     }
 
-    public static HashSet<String> loadStopWords(String nomFichier) {
+    public static HashSet<String> lectureStopWords(String nomFichier) {
         // {} → {résultat = HashSet<String> contenant tous les mots du fichier nomFichier}
         HashSet<String> stopWords = new HashSet<>();
         try {
@@ -101,7 +101,7 @@ public class Classification {
         //                  apparaître qu’une fois dans la ArrayList retournée. Dans les entiers, nous stockerons les
         //                  scores associés à chaque mot et dans un premier temps, nous initialiserons ce score à 0.}
         ArrayList<PaireChaineEntier> dico = new ArrayList<>();
-        HashSet<String> motsExclus = loadStopWords(stopWordsFilePath);
+        HashSet<String> motsExclus = lectureStopWords(stopWordsFilePath);
         for (Depeche depeche : depeches) {
             if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
                 for (String mot : depeche.getMots()) {
