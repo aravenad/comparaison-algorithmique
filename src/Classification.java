@@ -1,10 +1,5 @@
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 public class Classification {
 
@@ -84,55 +79,60 @@ public class Classification {
         }
     }
 
-    public static ArrayList<PaireChaineEntier> initDico(ArrayList<Depeche> depeches, String categorie) {
-        // {} → {résultat = une ArrayList<PaireChaineEntier> contenant tous les mots présents dans au moins une dépêche
+    public static HashSet<String> loadStopWords(String nomFichier) {
+        // {} → {résultat = HashSet<String> contenant tous les mots du fichier nomFichier}
+        HashSet<String> stopWords = new HashSet<>();
+        try {
+            BufferedReader lecteur = new BufferedReader(new FileReader(nomFichier));
+            String ligne;
+            while ((ligne = lecteur.readLine()) != null) {
+                stopWords.add(ligne.trim());
+            }
+            lecteur.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return stopWords;
+    }
+
+    public static ArrayList<PaireChaineEntier> initDico(ArrayList<Depeche> depeches, String categorie, String stopWordsFilePath) {
+        // {} → {résultat = ArrayList<PaireChaineEntier> contenant tous les mots présents dans au moins une dépêche
         //                  de la catégorie categorie. Attention, même si le mot est présent plusieurs fois, il ne doit
         //                  apparaître qu’une fois dans la ArrayList retournée. Dans les entiers, nous stockerons les
         //                  scores associés à chaque mot et dans un premier temps, nous initialiserons ce score à 0.}
-    ArrayList<PaireChaineEntier> dico = new ArrayList<>();
-    HashSet<String> motsExclus = new HashSet<>();
-        motsExclus.add("pour");
-        motsExclus.add("tous");
-        motsExclus.add("tout");
-        motsExclus.add("toute");
-        motsExclus.add("toutes");
-        motsExclus.add("dans");
-        motsExclus.add("avec");
-        motsExclus.add("sans");
-        motsExclus.add("sous");
+        HashSet<String> motsUniques = new HashSet<>();
+        HashSet<String> motsExclus = loadStopWords(stopWordsFilePath);
         for (Depeche depeche : depeches) {
             if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
                 for (String mot : depeche.getMots()) {
-                    if (UtilitairePaireChaineEntier.indicePourChaine(dico,mot) != -1) {
-                        break;
-                    }
-                    PaireChaineEntier temp = new PaireChaineEntier(mot, 0);
-                    if (temp.getChaine().length() > 3 && (!motsExclus.contains(temp.getChaine()))) {
-                        dico.add(temp);
+                    if (mot.length() > 3 && !motsExclus.contains(mot)) {
+                        motsUniques.add(mot);
                     }
                 }
             }
+        }
+        ArrayList<PaireChaineEntier> dico = new ArrayList<>();
+        for (String mot : motsUniques) {
+            dico.add(new PaireChaineEntier(mot, 0));
         }
         return dico;
     }
 
     public static void calculScores(ArrayList<Depeche> depeches, String categorie, ArrayList<PaireChaineEntier> dictionnaire) {
+        // {} → {met à jour les scores des mots présents dans dictionnaire. Lorsqu'un mot présent dans dictionnaire
+        //       apparaît dans une dépêche de depeches, son score est : décrémenté si la dépêche n'est pas dans la
+        //       catégorie categorie et incrémenté si la dépêche est dans la catégorie categorie.}
+        HashMap<String, PaireChaineEntier> map = new HashMap<>();
+        for (PaireChaineEntier paire : dictionnaire) {
+            map.put(paire.getChaine().toLowerCase(), paire);
+        }
         for (Depeche depeche : depeches) {
-            if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
-                for (int i = 0; i < depeche.getMots().size(); i++) {
-                    for (PaireChaineEntier paire : dictionnaire) {
-                        if (paire.getChaine().compareToIgnoreCase(depeche.getMots().get(i)) == 0) {
-                            paire.setEntier(paire.getEntier() + 1);
-                        }
-                    }
-                }
-            } else {
-                for (int i = 0; i < depeche.getMots().size(); i++) {
-                    for (PaireChaineEntier paire : dictionnaire) {
-                        if (paire.getChaine().compareToIgnoreCase(depeche.getMots().get(i)) == 0) {
-                            paire.setEntier(paire.getEntier() - 1);
-                        }
-                    }
+            int scoreAdjustment = depeche.getCategorie().compareToIgnoreCase(categorie) == 0 ? 1 : -1;
+            for (String mot : depeche.getMots()) {
+                mot = mot.toLowerCase();
+                PaireChaineEntier paire = map.get(mot);
+                if (paire != null) {
+                    paire.setEntier(paire.getEntier() + scoreAdjustment);
                 }
             }
         }
@@ -159,7 +159,7 @@ public class Classification {
         //       fichier lexique en utilisant la fonction poidsPourScore. Prenez exemple sur la classe
         //       ExempleEcritureFichier pour l’écriture dans un fichier.}
         try {
-            ArrayList<PaireChaineEntier> dictionnaire = initDico(depeches, categorie);
+            ArrayList<PaireChaineEntier> dictionnaire = initDico(depeches, categorie, "./stopwords-fr.txt");
             calculScores(depeches, categorie, dictionnaire);
             FileWriter file = new FileWriter(nomFichier);
             for (PaireChaineEntier paire : dictionnaire) {
