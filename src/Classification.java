@@ -100,18 +100,21 @@ public class Classification {
         //                  de la catégorie categorie. Attention, même si le mot est présent plusieurs fois, il ne doit
         //                  apparaître qu’une fois dans la ArrayList retournée. Dans les entiers, nous stockerons les
         //                  scores associés à chaque mot et dans un premier temps, nous initialiserons ce score à 0.}
+        ArrayList<PaireChaineEntier> dico = new ArrayList<>();
         HashSet<String> motsUniques = new HashSet<>();
         HashSet<String> motsExclus = loadStopWords(stopWordsFilePath);
         for (Depeche depeche : depeches) {
             if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
                 for (String mot : depeche.getMots()) {
+                    if (UtilitairePaireChaineEntier.indicePourChaine(dico, mot) == -1) {
+                        break;
+                    }
                     if (mot.length() > 3 && !motsExclus.contains(mot)) {
                         motsUniques.add(mot);
                     }
                 }
             }
         }
-        ArrayList<PaireChaineEntier> dico = new ArrayList<>();
         for (String mot : motsUniques) {
             dico.add(new PaireChaineEntier(mot, 0));
         }
@@ -210,7 +213,7 @@ public class Classification {
 //        Scanner scanner = new Scanner(System.in);
 //        System.out.print("\nEntrez un mot : ");
 //        String mot = scanner.nextLine();
-//        System.out.printf("Le poids associé à %s est %d\n\n",
+//        System.out.printf("Le score associé à %s est %d\n\n",
 //                mot,
 //                UtilitairePaireChaineEntier.entierPourChaine(sports.getLexique(), mot));
 //
