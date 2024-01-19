@@ -170,7 +170,7 @@ public class Classification {
     public static void main(String[] args) {
         //Chargement des dépêches en mémoire
         System.out.println("Chargement des dépêches...");
-        ArrayList<Depeche> depeches = lectureDepeches("./depeches.txt");
+        ArrayList<Depeche> depeches = lectureDepeches("./test.txt");
 
         // Affichage des dépêches
 //        for (Depeche depeche : depeches) {
