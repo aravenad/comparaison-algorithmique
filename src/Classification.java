@@ -107,7 +107,7 @@ public class Classification {
             if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
                 for (String mot : depeche.getMots()) {
                     if (UtilitairePaireChaineEntier.indicePourChaine(dico, mot) == -1) {
-                        break;
+                        motsUniques.add(mot);
                     }
                     if (mot.length() > 3 && !motsExclus.contains(mot)) {
                         motsUniques.add(mot);
