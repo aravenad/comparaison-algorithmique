@@ -101,22 +101,15 @@ public class Classification {
         //                  apparaître qu’une fois dans la ArrayList retournée. Dans les entiers, nous stockerons les
         //                  scores associés à chaque mot et dans un premier temps, nous initialiserons ce score à 0.}
         ArrayList<PaireChaineEntier> dico = new ArrayList<>();
-        HashSet<String> motsUniques = new HashSet<>();
         HashSet<String> motsExclus = loadStopWords(stopWordsFilePath);
         for (Depeche depeche : depeches) {
             if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
                 for (String mot : depeche.getMots()) {
-                    if (UtilitairePaireChaineEntier.indicePourChaine(dico, mot) == -1) {
-                        motsUniques.add(mot);
-                    }
-                    if (mot.length() > 3 && !motsExclus.contains(mot)) {
-                        motsUniques.add(mot);
+                    if (!motsExclus.contains(mot) && UtilitairePaireChaineEntier.indicePourChaine(dico, mot) == -1) {
+                            dico.add(new PaireChaineEntier(mot, 0));
                     }
                 }
             }
-        }
-        for (String mot : motsUniques) {
-            dico.add(new PaireChaineEntier(mot, 0));
         }
         return dico;
     }
