@@ -105,7 +105,7 @@ public class Classification {
         for (Depeche depeche : depeches) {
             if (depeche.getCategorie().compareToIgnoreCase(categorie) == 0) {
                 for (String mot : depeche.getMots()) {
-                    if (!motsExclus.contains(mot) && UtilitairePaireChaineEntier.indicePourChaine(dico, mot) == -1) {
+                    if (mot.length() > 3 && !motsExclus.contains(mot) && UtilitairePaireChaineEntier.indicePourChaine(dico, mot) == -1) {
                             dico.add(new PaireChaineEntier(mot, 0));
                     }
                 }
