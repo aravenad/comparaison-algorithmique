@@ -20,8 +20,9 @@ public class Classification {
     static final List<String> CATEGORIES =
             List.of("environnement-sciences", "culture", "economie", "politique", "sports");
 
-    // Les mots de 3 lettres ou moins sont ignorés lors de la génération automatique des lexiques.
-    static final int LONGUEUR_MIN_MOT = 4;
+    // Les mots de moins de 3 lettres sont ignorés lors de la génération automatique des lexiques. 3 plutôt que 4
+    // pour garder les sigles (PIB, PSG, OGM, UMP…), très discriminants (cf. docs/analyse.md).
+    static final int LONGUEUR_MIN_MOT = 3;
 
     public static ArrayList<Depeche> lectureDepeches(String nomFichier) {
         // {} → {résultat = dépêches du fichier nomFichier. Chaque dépêche commence par les lignes « .N id », « .D date »,
@@ -168,7 +169,9 @@ public class Classification {
     public static int poidsPourScore(int score) {
         // {} → {résultat = une valeur de poids (1,2 ou 3) en fonction du score score
         //                  (à vous de décider quel poids pour quel score).}
-        if (score <= -4) {
+        // Seuils choisis par validation croisée sur le corpus d'apprentissage (cf. docs/analyse.md) : un mot qui
+        // n'apparaît pas nettement plus dans la catégorie qu'ailleurs (score <= 1) ne reçoit que le poids minimal.
+        if (score <= 1) {
             return 1;
         } else if (score >= 4) {
             return 3;

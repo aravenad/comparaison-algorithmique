@@ -55,9 +55,20 @@ class ClassificationTest {
         ArrayList<PaireChaineEntier> dico = Classification.initDico(corpus(), "sports", Set.of("victoire"));
 
         // « le », « du », « au »… sont trop courts ; « victoire » est un mot exclu ; « ministre » n'est pas dans SPORTS.
-        assertEquals(List.of("club", "finale", "football", "match", "perd"),
+        assertEquals(List.of("club", "finale", "football", "match", "perd", "son"),
                 dico.stream().map(PaireChaineEntier::getChaine).toList());
         dico.forEach(paire -> assertEquals(0, paire.getEntier()));
+    }
+
+    @Test
+    void initDicoGardeLesSiglesDeTroisLettres() {
+        ArrayList<Depeche> depeches = new ArrayList<>(List.of(
+                new Depeche("1", "010124", "ECONOMIE", "Le PIB de la France a progressé")));
+
+        List<String> mots = Classification.initDico(depeches, "economie", Set.of()).stream()
+                .map(PaireChaineEntier::getChaine).toList();
+
+        assertEquals(List.of("france", "pib", "progressé"), mots);
     }
 
     @Test
@@ -72,8 +83,12 @@ class ClassificationTest {
     @Test
     void poidsPourScore() {
         assertEquals(1, Classification.poidsPourScore(-10));
-        assertEquals(2, Classification.poidsPourScore(0));
+        assertEquals(1, Classification.poidsPourScore(0));
+        assertEquals(1, Classification.poidsPourScore(1));
+        assertEquals(2, Classification.poidsPourScore(2));
+        assertEquals(2, Classification.poidsPourScore(3));
         assertEquals(3, Classification.poidsPourScore(4));
+        assertEquals(3, Classification.poidsPourScore(50));
     }
 
     @Test

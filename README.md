@@ -10,7 +10,7 @@ sont d'abord écrits à la main, puis **générés automatiquement** à partir d
 | Lexiques | Réussite moyenne sur le corpus de test |
 |---|---:|
 | Écrits à la main | 58 % |
-| Générés automatiquement | 74 % |
+| Générés automatiquement | 76 % |
 
 ## Prérequis
 
@@ -106,7 +106,7 @@ Classement : une ligne `id:CATEGORIE` par dépêche, puis le pourcentage de réu
 - [Sujet reconstitué](docs/sujet.md) : les documents de l'IUT n'étant plus disponibles, le sujet a été reconstitué
   à partir du code et de l'historique.
 - [Analyse de l'existant](docs/analyse.md) : bugs trouvés lors de la reprise, complexités et temps avant et après,
-  pistes d'amélioration.
+  réglage des lexiques générés par validation croisée, pistes d'amélioration.
 
 ## Auteurs
 
