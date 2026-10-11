@@ -1,2 +1,23 @@
-# Project exclude paths
-/out/
+# Build
+target/
+out/
+*.class
+*.jar
+
+# Résultats générés par le programme (lexiques automatiques, classements)
+resultats/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Eclipse / VS Code
+.classpath
+.project
+.settings/
+.vscode/
+
+# Système
+.DS_Store
+Thumbs.db
+*~
