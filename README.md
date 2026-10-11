@@ -1,5 +1,7 @@
 # Classification automatique de dépêches
 
+[![CI](https://github.com/aravenad/comparaison-algorithmique/actions/workflows/ci.yml/badge.svg)](https://github.com/aravenad/comparaison-algorithmique/actions/workflows/ci.yml)
+
 Projet de la SAÉ S1.02 *Comparaison d'approches algorithmiques* (BUT Informatique, IUT, janvier 2024).
 
 Le programme classe des dépêches de presse dans cinq catégories (environnement-sciences, culture, économie,
@@ -15,14 +17,16 @@ sont d'abord écrits à la main, puis **générés automatiquement** à partir d
 ## Prérequis
 
 - Java 17 ou plus récent
-- Maven 3.6 ou plus récent (facultatif, voir plus bas pour s'en passer)
+
+Maven n'a pas besoin d'être installé : le script `./mvnw` (`mvnw.cmd` sous Windows) télécharge la bonne version
+au premier lancement.
 
 ## Utilisation
 
 Toutes les commandes se lancent depuis la racine du projet, car les chemins des données sont relatifs à celle-ci.
 
 ```bash
-mvn package
+./mvnw package
 ```
 
 ```bash
@@ -46,7 +50,7 @@ résultats.
 java -jar target/comparaison-algorithmique-1.0.0.jar data/corpus/depeches.txt data/corpus/test.txt resultats
 ```
 
-### Sans Maven
+### Sans Maven ni accès réseau
 
 ```bash
 javac -encoding UTF-8 -d out $(find src/main/java -name '*.java')
@@ -59,7 +63,23 @@ java -cp out io.github.aravenad.classification.Classification
 ## Tests
 
 ```bash
-mvn test
+./mvnw test
+```
+
+L'intégration continue (GitHub Actions) lance le build, les tests et le classement à chaque push sur `master` et
+sur chaque pull request, avec Java 17 et 21.
+
+## Réglage des paramètres
+
+Les paramètres de génération des lexiques ont été choisis par validation croisée sur le corpus d'apprentissage
+(voir [docs/analyse.md](docs/analyse.md)). Pour relancer les mesures :
+
+```bash
+./mvnw test-compile
+```
+
+```bash
+java -cp target/classes:target/test-classes io.github.aravenad.classification.experiences.ValidationCroisee
 ```
 
 ## Arborescence
@@ -81,7 +101,9 @@ mvn test
 │   │   ├── Depeche.java                      dépêche et découpage en mots
 │   │   ├── PaireChaineEntier.java
 │   │   └── UtilitairePaireChaineEntier.java  recherche dichotomique, max, moyenne
-│   └── test/java/…                           tests JUnit 5
+│   └── test/java/…                           tests JUnit 5 et script de validation croisée
+├── .github/workflows/ci.yml                  intégration continue
+├── mvnw, mvnw.cmd                            Maven Wrapper
 └── pom.xml
 ```
 
