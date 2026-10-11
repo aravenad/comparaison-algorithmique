@@ -1,29 +1,40 @@
-# Classification automatique de dépêches
+# SAÉ 1.02 – Classification automatique de dépêches
 
-[![CI](https://github.com/aravenad/comparaison-algorithmique/actions/workflows/ci.yml/badge.svg)](https://github.com/aravenad/comparaison-algorithmique/actions/workflows/ci.yml)
+Projet de première année de BUT Informatique (IUT2 Grenoble, janvier 2024) : classer automatiquement des dépêches de
+presse dans cinq catégories (environnement-sciences, culture, économie, politique, sports). Le sujet, *Comparaison
+d'approches algorithmiques*, demandait d'écrire des lexiques de mots pondérés à la main, puis de les générer
+automatiquement à partir de dépêches déjà classées, et enfin de rendre les algorithmes plus efficaces.
 
-Projet de la SAÉ S1.02 *Comparaison d'approches algorithmiques* (BUT Informatique, IUT, janvier 2024).
+La version rendue en janvier 2024 est marquée par le tag
+[`rendu-code`](https://github.com/aravenad/comparaison-algorithmique/tree/rendu-code). J'ai repris le projet seul en
+octobre 2026 pour corriger les bugs, régler l'algorithme et le comparer à d'autres méthodes d'apprentissage.
 
-Le programme classe des dépêches de presse dans cinq catégories (environnement-sciences, culture, économie,
-politique, sports) à l'aide de **lexiques pondérés**. Le score d'une dépêche pour une catégorie est la somme des
-poids des mots de son lexique qu'elle contient, et la catégorie retenue est celle de plus grand score. Les lexiques
-sont d'abord écrits à la main, puis **générés automatiquement** à partir d'un corpus d'apprentissage.
-
-| Lexiques | Réussite moyenne sur le corpus de test |
+| Approche | Dépêches de test bien classées |
 |---|---:|
-| Écrits à la main | 58 % |
-| Générés automatiquement | 76 % |
+| Lexiques écrits à la main | 58 % |
+| Lexiques générés automatiquement | 76 % |
+| Bayésien naïf sur les n-grammes de caractères | **78 %** |
 
-## Prérequis
+## Ce que fait le programme
 
-- Java 17 ou plus récent
+Il apprend sur les 500 dépêches de `data/corpus/depeches.txt` et s'évalue sur 500 autres, jamais vues, dans
+`data/corpus/test.txt` :
 
-Maven n'a pas besoin d'être installé : le script `./mvnw` (`mvnw.cmd` sous Windows) télécharge la bonne version
-au premier lancement.
+- **Lexiques manuels** : un lexique par catégorie (`data/lexiques/`). Le score d'une dépêche est la somme des poids
+  de ses mots présents dans le lexique, et la catégorie retenue est celle de plus grand score.
+- **Lexiques générés** : même principe, mais les lexiques sont construits automatiquement. Un mot gagne un point
+  chaque fois qu'il apparaît dans une dépêche de la catégorie et en perd un ailleurs ; ce score est ensuite
+  converti en poids 1, 2 ou 3.
+- **Bayésien naïf** : chaque mot reçoit une probabilité apprise par catégorie. Il est appliqué aux mots, puis aux
+  morceaux de 3 à 6 lettres des mots (n-grammes de caractères), pour que « footballeurs » ressemble à « football ».
 
-## Utilisation
+Pour chaque approche, il affiche le pourcentage de réussite par catégorie, puis la matrice de confusion de la
+meilleure, et il écrit le classement détaillé dans `resultats/`.
 
-Toutes les commandes se lancent depuis la racine du projet, car les chemins des données sont relatifs à celle-ci.
+## Lancer le programme
+
+Il faut Java 17 ou plus récent. Maven est fourni par le wrapper `mvnw`, rien d'autre à installer. Les commandes se
+lancent depuis la racine du projet, car les chemins des données sont relatifs :
 
 ```bash
 ./mvnw package
@@ -33,24 +44,8 @@ Toutes les commandes se lancent depuis la racine du projet, car les chemins des 
 java -jar target/comparaison-algorithmique-1.0.0.jar
 ```
 
-Le programme :
-
-1. classe les dépêches de `data/corpus/test.txt` avec les lexiques manuels de `data/lexiques/` ;
-2. génère un lexique par catégorie à partir de `data/corpus/depeches.txt` dans `resultats/lexiques-auto/` ;
-3. classe à nouveau le corpus de test avec ces lexiques ;
-4. affiche les pourcentages de réussite et les temps d'exécution.
-
-Les classements détaillés sont écrits dans `resultats/classement-manuel.txt` et `resultats/classement-auto.txt`.
-Ce dossier est régénéré à chaque exécution et n'est pas versionné.
-
-Les chemins sont modifiables en argument, dans cet ordre : corpus d'apprentissage, corpus de test, dossier des
-résultats.
-
-```bash
-java -jar target/comparaison-algorithmique-1.0.0.jar data/corpus/depeches.txt data/corpus/test.txt resultats
-```
-
-### Sans Maven ni accès réseau
+On peut passer en arguments un autre corpus d'apprentissage, un autre corpus de test et un autre dossier de
+résultats, dans cet ordre. Sans Maven ni accès réseau, `javac` suffit :
 
 ```bash
 javac -encoding UTF-8 -d out $(find src/main/java -name '*.java')
@@ -60,76 +55,87 @@ javac -encoding UTF-8 -d out $(find src/main/java -name '*.java')
 java -cp out io.github.aravenad.classification.Classification
 ```
 
-## Tests
+## Les autres commandes
 
-```bash
-./mvnw test
-```
+Les expériences se lancent après `./mvnw test-compile`, avec
+`java -cp target/classes:target/test-classes io.github.aravenad.classification.experiences.<Classe>` :
 
-L'intégration continue (GitHub Actions) lance le build, les tests et le classement à chaque push sur `master` et
-sur chaque pull request, avec Java 17 et 21.
-
-## Réglage des paramètres
-
-Les paramètres de génération des lexiques ont été choisis par validation croisée sur le corpus d'apprentissage
-(voir [docs/analyse.md](docs/analyse.md)). Pour relancer les mesures :
-
-```bash
-./mvnw test-compile
-```
-
-```bash
-java -cp target/classes:target/test-classes io.github.aravenad.classification.experiences.ValidationCroisee
-```
+| Commande | Rôle |
+|---|---|
+| `./mvnw test` | Tests unitaires (JUnit 5) |
+| `ValidationCroisee` | Compare les réglages des lexiques générés (longueur minimale des mots, seuils des poids) |
+| `ValidationCroisee grille` | Refait la recherche complète des réglages (10 140 combinaisons, environ 30 s) |
+| `ComparaisonApproches` | Compare les lexiques, le bayésien naïf, les centroïdes TF-IDF, les k plus proches voisins et la régression logistique |
 
 ## Arborescence
 
-```text
+```
+├── pom.xml
 ├── data/
 │   ├── corpus/
-│   │   ├── depeches.txt     corpus d'apprentissage (500 dépêches)
-│   │   └── test.txt         corpus de test (500 dépêches)
-│   ├── lexiques/            lexiques écrits à la main, un par catégorie
-│   └── stopwords-fr.txt     mots vides ignorés lors de la génération
-├── docs/
-│   ├── sujet.md             sujet reconstitué
-│   └── analyse.md           analyse de l'existant, corrections, mesures et pistes
+│   │   ├── depeches.txt      dépêches d'apprentissage (500, 100 par catégorie)
+│   │   └── test.txt          dépêches de test (500)
+│   ├── lexiques/             nos lexiques écrits à la main
+│   └── stopwords-fr.txt      mots vides ignorés (le, de, avec…)
 ├── src/
 │   ├── main/java/io/github/aravenad/classification/
-│   │   ├── Classification.java               lecture, génération des lexiques, classement, main
-│   │   ├── Categorie.java                    lexique et score d'une catégorie
-│   │   ├── Depeche.java                      dépêche et découpage en mots
+│   │   ├── Classification.java          lecture des fichiers, génération des lexiques, programme principal
+│   │   ├── Categorie.java               lexique et score d'une catégorie
+│   │   ├── Depeche.java                 une dépêche et son découpage en mots
 │   │   ├── PaireChaineEntier.java
-│   │   └── UtilitairePaireChaineEntier.java  recherche dichotomique, max, moyenne
-│   └── test/java/…                           tests JUnit 5 et script de validation croisée
-├── .github/workflows/ci.yml                  intégration continue
-├── mvnw, mvnw.cmd                            Maven Wrapper
-└── pom.xml
+│   │   ├── UtilitairePaireChaineEntier.java   recherche dichotomique, maximum, moyenne
+│   │   ├── Classifieur.java             l'interface commune aux approches
+│   │   ├── ClassifieurLexiques.java     l'approche du sujet
+│   │   ├── BayesNaif.java               le bayésien naïf
+│   │   ├── Caracteristiques.java        mots et n-grammes de caractères
+│   │   └── Evaluation.java              pourcentages, matrice de confusion, validation croisée
+│   └── test/java/…                      tests unitaires et expériences (experiences/)
+└── docs/
+    ├── sujet.md              le sujet, reconstitué
+    └── analyse.md            bugs corrigés, mesures et comparaison des approches
 ```
 
-## Formats de fichiers
+## Documents
 
-Dépêche (`.N` identifiant, `.D` date, `.C` catégorie réelle, `.T` texte sur une ou plusieurs lignes) :
+- [Sujet](docs/sujet.md) : les documents de l'IUT ne sont plus disponibles, le sujet est reconstitué à partir du
+  code, des spécifications recopiées en commentaire et de l'historique.
+- [Analyse](docs/analyse.md) : les bugs trouvés en reprenant le projet, les temps d'exécution avant et après, le
+  réglage des lexiques et la comparaison des approches, avec toutes les mesures.
 
-```text
-.N 001
-.D 140208
-.C ENVIRONNEMENT-SCIENCES
-.T Des cellules souches ont été produites à partir de cellules adultes
-sans provoquer de tumeur.
-```
+## Nos choix
 
-Lexique : une entrée `mot:poids` par ligne, avec un poids de 1, 2 ou 3.
+En 2024, on a surtout travaillé l'efficacité, comme le demandait le sujet : recherche dichotomique, `HashSet` pour les
+mots vides, `HashMap` pour le calcul des scores et un thread par catégorie.
 
-Classement : une ligne `id:CATEGORIE` par dépêche, puis le pourcentage de réussite par catégorie et la moyenne.
+En reprenant le projet, j'ai d'abord corrigé des bugs qui faussaient les résultats, le plus gros étant que le
+programme apprenait et s'évaluait sur les mêmes dépêches (98 % affichés, 74 % en réalité). Toutes les mesures suivent
+maintenant le même protocole : les réglages sont choisis par **validation croisée** sur les seules dépêches
+d'apprentissage, et le corpus de test ne sert qu'à vérifier le résultat final. Ça évite de choisir les paramètres qui
+tombent bien sur le test.
 
-## Documentation
+Toutes les méthodes essayées finissent entre 75 et 79 %. Les dépêches sont courtes (40 mots en moyenne), il n'y a que
+500 exemples d'apprentissage et certaines catégories se recouvrent vraiment. Une dépêche sur les OGM votés à
+l'Assemblée, par exemple, est étiquetée environnement-sciences mais parle autant de politique. Le détail est dans
+l'[analyse](docs/analyse.md#pourquoi-on-plafonne-vers-78-).
 
-- [Sujet reconstitué](docs/sujet.md) : les documents de l'IUT n'étant plus disponibles, le sujet a été reconstitué
-  à partir du code et de l'historique.
-- [Analyse de l'existant](docs/analyse.md) : bugs trouvés lors de la reprise, complexités et temps avant et après,
-  réglage des lexiques générés par validation croisée, pistes d'amélioration.
+### Écarts avec le sujet et la version rendue
 
-## Auteurs
+| Sujet ou version de 2024 | Réalisation | Raison |
+|---|---|---|
+| `initDico(depeches, categorie)` | `initDico(depeches, categorie, motsExclus)` | Les mots vides sont lus une seule fois, et non à chaque catégorie |
+| `classementDepeches` ne renvoie rien | Renvoie les pourcentages par catégorie | Le programme les affiche sans relire le fichier |
+| `indicePourChaine` trie la liste à chaque appel | Exige une liste déjà triée (`trierParChaine`) | Le tri à chaque appel rendait `initDico` quadratique |
+| Mots de plus de 3 lettres dans les lexiques générés | Mots de 3 lettres ou plus | Garde les sigles (PIB, PSG, OGM), choisi par validation croisée |
+| Absent | `Classifieur`, `BayesNaif`, `Evaluation` | Comparer les lexiques à d'autres approches |
 
-Damien Aravena et riondetf, d'après l'historique git.
+Les deux classes d'exemple fournies par l'IUT (`ExempleEcritureFichier`, `ExempleTempsExecution`) sont retirées ;
+elles restent dans le tag `rendu-code`.
+
+## Équipe
+
+ARAVENA BRAVO Damien, RIONDET Flavien.
+
+## Crédits
+
+- Sujet : SAÉ S1.02 *Comparaison d'approches algorithmiques* du département Informatique de l'IUT2 Grenoble
+- Dépêches et liste de mots vides : fournies avec le sujet

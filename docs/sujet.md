@@ -7,7 +7,7 @@
 ## Contexte
 
 SAÉ S1.02 *Comparaison d'approches algorithmiques*, BUT Informatique 1ʳᵉ année, réalisée du 15 au 19 janvier 2024
-(auteurs d'après l'historique git : Damien Aravena, riondetf).
+par ARAVENA BRAVO Damien et RIONDET Flavien.
 
 Le but est de **classer automatiquement des dépêches de presse** dans l'une des cinq catégories suivantes :
 `ENVIRONNEMENT-SCIENCES`, `CULTURE`, `ECONOMIE`, `POLITIQUE`, `SPORTS`.
