@@ -1,3 +1,5 @@
+package io.github.aravenad.classification;
+
 import java.util.ArrayList;
 
 public class Depeche {

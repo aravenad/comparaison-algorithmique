@@ -1,63 +1,53 @@
+package io.github.aravenad.classification;
+
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class UtilitairePaireChaineEntier {
 
-    private static void triBullesAmeliore(ArrayList<PaireChaineEntier> v) {
-        // {} → {v est trié par ordre alphabétique croissant}
-        int j;
-        int i = 0;
-        boolean onAPermute = true;
-        while (onAPermute) {
-            j = v.size() - 1;
-            onAPermute = false;
-            while (j > i) {
-                if (v.get(j).getChaine().compareToIgnoreCase(v.get(j-1).getChaine()) < 0) {
-                    PaireChaineEntier temporaire = v.get(j);
-                    v.set(j, v.get(j - 1));
-                    v.set(j - 1, temporaire);
-                    onAPermute = true;
-                }
-                j = j - 1;
-            }
-            i = i + 1;
-        }
+    private static final Comparator<PaireChaineEntier> ORDRE_ALPHABETIQUE =
+            Comparator.comparing(PaireChaineEntier::getChaine);
+
+    public static void trierParChaine(ArrayList<PaireChaineEntier> listePaires) {
+        // {} → {listePaires est trié par ordre alphabétique croissant des chaînes}
+        // Tri fusion de la bibliothèque standard (stable, O(n log n)) à la place de l'ancien tri à bulles en O(n²).
+        listePaires.sort(ORDRE_ALPHABETIQUE);
     }
 
     public static int indicePourChaine(ArrayList<PaireChaineEntier> listePaires, String chaine) {
-        // {} → {résultat = indice de chaine dans listePaires si chaine est présente et -1 sinon via recherche dichotomique}
-        triBullesAmeliore(listePaires);
-        int resultat = -1;
+        // {listePaires est trié par ordre alphabétique croissant (cf. trierParChaine)}
+        // → {résultat = indice de chaine dans listePaires si chaine est présente et -1 sinon via recherche dichotomique}
         int debut = 0;
         int fin = listePaires.size() - 1;
         while (debut <= fin) {
-            int milieu = (debut + fin) / 2;
-            if (listePaires.get(milieu).getChaine().equals(chaine)) {
-                resultat = milieu;
-                break;
-            } else if (listePaires.get(milieu).getChaine().compareToIgnoreCase(chaine) < 0) {
+            int milieu = (debut + fin) >>> 1;
+            int comparaison = listePaires.get(milieu).getChaine().compareTo(chaine);
+            if (comparaison == 0) {
+                return milieu;
+            } else if (comparaison < 0) {
                 debut = milieu + 1;
             } else {
                 fin = milieu - 1;
             }
         }
-        return resultat;
+        return -1;
     }
 
     public static int entierPourChaine(ArrayList<PaireChaineEntier> listePaires, String chaine) {
         // {} → {résultat = entier associé à la chaîne de caractères chaine dans listePaires si elle est présente et 0 sinon}
-        int resultat = 0;
         for (PaireChaineEntier paire : listePaires) {
             if (paire.getChaine().equals(chaine)) {
-                resultat = paire.getEntier();
+                return paire.getEntier();
             }
         }
-        return resultat;
+        return 0;
     }
 
     public static String chaineMax(ArrayList<PaireChaineEntier> listePaires) {
-        // {} → {résultat = chaîne associée au plus grand entier de listePaires}
+        // {} → {résultat = chaîne associée au plus grand entier de listePaires (la première en cas d'égalité),
+        //       chaîne vide si listePaires est vide}
         String resultat = "";
-        int max = 0;
+        int max = Integer.MIN_VALUE;
         for (PaireChaineEntier paire : listePaires) {
             if (paire.getEntier() > max) {
                 max = paire.getEntier();
@@ -68,13 +58,14 @@ public class UtilitairePaireChaineEntier {
     }
 
     public static float moyenne(ArrayList<PaireChaineEntier> listePaires) {
-        // {} → {résultat = moyenne des entiers stockés dans listePaires}
-        int i = 0;
-        float moy = 0.0f;
-        while (i < listePaires.size()){
-            moy += listePaires.get(i).getEntier();
-            i++;
+        // {} → {résultat = moyenne des entiers stockés dans listePaires, 0 si listePaires est vide}
+        if (listePaires.isEmpty()) {
+            return 0f;
         }
-        return moy / i;
+        float somme = 0f;
+        for (PaireChaineEntier paire : listePaires) {
+            somme += paire.getEntier();
+        }
+        return somme / listePaires.size();
     }
 }
