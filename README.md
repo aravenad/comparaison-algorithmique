@@ -95,13 +95,6 @@ Les expériences se lancent après `./mvnw test-compile`, avec
     └── analyse.md            bugs corrigés, mesures et comparaison des approches
 ```
 
-## Documents
-
-- [Sujet](docs/sujet.md) : les documents de l'IUT ne sont plus disponibles, le sujet est reconstitué à partir du
-  code, des spécifications recopiées en commentaire et de l'historique.
-- [Analyse](docs/analyse.md) : les bugs trouvés en reprenant le projet, les temps d'exécution avant et après, le
-  réglage des lexiques et la comparaison des approches, avec toutes les mesures.
-
 ## Nos choix
 
 En 2024, on a surtout travaillé l'efficacité, comme le demandait le sujet : recherche dichotomique, `HashSet` pour les
