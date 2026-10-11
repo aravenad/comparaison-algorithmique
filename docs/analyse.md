@@ -67,7 +67,7 @@ réécriture : seuls les temps changent. Les paramètres ont ensuite été régl
 - UTF-8 explicite partout, `try-with-resources`, erreurs remontées au lieu d'être ignorées.
 - `indicePourChaine` ne trie plus la liste : elle exige une liste triée (`trierParChaine`).
 - Code rangé dans un package, projet Maven, tests unitaires JUnit 5.
-- Réglage de la génération des lexiques (voir ci-dessous).
+- Réglage de la génération des lexiques, puis comparaison avec d'autres approches (voir ci-dessous).
 
 ## Réglage des lexiques générés
 
@@ -119,26 +119,79 @@ Ce que montrent les mesures :
 
 ## Résultats sur le corpus de test
 
-| Catégorie | Lexiques manuels, avant | Lexiques manuels, après | Lexiques générés, avant réglage | Lexiques générés, après réglage |
-|---|---:|---:|---:|---:|
-| Environnement-sciences | 51 % | 74 % | 63 % | 69 % |
-| Culture | 42 % | 45 % | 74 % | 77 % |
-| Économie | 47 % | 45 % | 74 % | 74 % |
-| Politique | 62 % | 73 % | 71 % | 72 % |
-| Sports | 53 % | 53 % | 86 % | 90 % |
-| **Moyenne** | **51 %** | **58 %** | **74 %** | **76 %** |
+| Catégorie | Lexiques manuels, avant | Lexiques manuels, après | Lexiques générés, avant réglage | Lexiques générés, après réglage | Bayésien naïf (n-grammes) |
+|---|---:|---:|---:|---:|---:|
+| Environnement-sciences | 51 % | 74 % | 63 % | 69 % | 73 % |
+| Culture | 42 % | 45 % | 74 % | 77 % | 78 % |
+| Économie | 47 % | 45 % | 74 % | 74 % | 74 % |
+| Politique | 62 % | 73 % | 71 % | 72 % | 76 % |
+| Sports | 53 % | 53 % | 86 % | 90 % | 89 % |
+| **Moyenne** | **51 %** | **58 %** | **74 %** | **76 %** | **78 %** |
 
 À propos des lexiques manuels : 113 dépêches de test sur 500 ne contiennent **aucun** de leurs mots. Elles ont
 un score nul partout et sont attribuées à la première catégorie, environnement-sciences. 16 d'entre elles en font
 réellement partie, ce qui gonfle ce score de 16 points. Avec les lexiques générés, aucune dépêche n'est dans ce cas.
 
+## Autres approches
+
+Les lexiques sont une méthode faite à la main. Pour voir ce qu'ils valent, je les ai comparés à des méthodes
+classiques d'apprentissage automatique, implémentées sans bibliothèque et évaluées avec le même protocole :
+validation croisée répétée sur `depeches.txt`, puis vérification une seule fois sur `test.txt`.
+
+| Approche | Validation croisée (10 × 5 blocs) | Corpus de test |
+|---|---:|---:|
+| Lexiques générés (réglés) | 77,1 % | 76,4 % |
+| Bayésien naïf sur les mots | 75,8 % | 75,2 % |
+| **Bayésien naïf sur les n-grammes de caractères** | **78,7 %** | **78,0 %** |
+| Centroïdes TF-IDF (méthode de Rocchio) | 75,9 % | 72,8 % |
+| 15 plus proches voisins (TF-IDF, cosinus) | 76,0 % | 73,2 % |
+| Régression logistique (TF-IDF) | 76,0 % | 73,0 % |
+
+Les mesures se reproduisent avec
+[`ComparaisonApproches`](../src/test/java/io/github/aravenad/classification/experiences/ComparaisonApproches.java).
+
+Le **bayésien naïf** ([`BayesNaif`](../src/main/java/io/github/aravenad/classification/BayesNaif.java)) estime pour
+chaque catégorie la probabilité de chaque caractéristique, avec un lissage de Laplace, et choisit la catégorie la plus
+probable. Contrairement aux lexiques, chaque mot a un poids réel appris, qui peut aussi faire **baisser** le score d'une
+catégorie. Sur les mots seuls, il ne fait pas mieux que les lexiques réglés. Il devient le meilleur avec les
+**n-grammes de caractères** : chaque mot est découpé en morceaux de 3 à 6 lettres (`<ma`, `mat`, `atc`…), si bien que
+« footballeurs » ressemble à « football » et « ministres » à « ministre ». Avec 500 dépêches d'apprentissage seulement,
+beaucoup de mots du test n'ont jamais été vus sous la même forme, d'où le gain. Ses paramètres (n de 3 à 6, α = 0,1,
+aucun filtrage des mots) ont été choisis par validation croisée parmi 140 combinaisons.
+
+Le programme principal compare les lexiques manuels, les lexiques générés et les deux variantes du bayésien naïf. Les
+méthodes TF-IDF ne sont gardées que dans l'expérience : plus compliquées, elles ne font pas mieux.
+
+### Pourquoi on plafonne vers 78 %
+
+Toutes les méthodes, si différentes soient-elles, finissent entre 75 et 79 %. La limite vient des données plus que des
+algorithmes :
+
+- **Les dépêches sont courtes**, 40 mots en moyenne, et l'apprentissage ne compte que 500 exemples.
+- **Les catégories se recouvrent.** La matrice de confusion du bayésien naïf (ci-dessous) montre que l'essentiel des
+  erreurs se fait entre environnement-sciences, économie et politique. Beaucoup sont défendables : « l'Assemblée adopte
+  un amendement qui encadre les OGM » est étiqueté environnement-sciences mais parle de politique, « OGM et herbicide,
+  produits phares de Monsanto » donne le bénéfice du groupe.
+- **Les sujets changent avec le temps.** L'apprentissage porte sur février-mars 2008, le test sur avril-mai 2008 :
+  l'affaire de la mozzarella à la dioxine, par exemple, n'apparaît que dans le test.
+
+```text
+réelle \ prédite         enviro cultur econom politi sports
+environnement-sciences       73      3     10     12      2
+culture                       9     78      3      6      4
+economie                     12      1     74     11      2
+politique                     3      2     18     76      1
+sports                        4      1      5      1     89
+```
+
 ## Pistes d'amélioration
 
-Le modèle « somme de poids 1, 2 ou 3 » plafonne autour de 77 %. Pour aller plus loin, il faudrait changer de
-modèle :
+Au-delà de ~78 %, il faut des connaissances que 500 dépêches ne contiennent pas :
 
-- pondérer chaque mot par sa fréquence relative dans la catégorie (approche de type TF-IDF ou bayésien naïf) au lieu
-  de trois poids entiers ;
-- normaliser le score par la taille du lexique, si une catégorie au lexique plus fourni s'avère avantagée (à
-  vérifier) ;
-- gérer explicitement les égalités et les scores nuls plutôt que de choisir la première catégorie.
+- des **représentations pré-entraînées** sur de grands corpus français (plongements de mots comme fastText, ou modèles
+  de phrases), qui savent déjà que « Borloo » et « ministre de l'écologie » sont liés ;
+- un **grand modèle de langage** interrogé sans exemple ou avec quelques exemples (zero-shot ou few-shot), qui
+  servirait aussi de point de comparaison avec ce que fait un humain sur les cas ambigus.
+
+Plus modestement, on pourrait aussi gérer explicitement les égalités et les scores nuls des lexiques plutôt que de
+choisir la première catégorie.

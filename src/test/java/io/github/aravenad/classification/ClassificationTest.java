@@ -123,4 +123,24 @@ class ClassificationTest {
         assertEquals(100, UtilitairePaireChaineEntier.entierPourChaine(pourcentages, "sports"));
         assertEquals(50, UtilitairePaireChaineEntier.entierPourChaine(pourcentages, "politique"));
     }
+
+    @Test
+    void lesLexiquesApprisEnMemoireClassentCommeLesFichiersGeneres() throws IOException {
+        List<String> noms = List.of("sports", "politique");
+        ArrayList<Categorie> depuisFichiers = new ArrayList<>();
+        for (String nom : noms) {
+            Path fichier = dossier.resolve("auto/" + nom + ".txt");
+            Classification.generationLexique(corpus(), nom, Set.of(), fichier.toString());
+            Categorie categorie = new Categorie(nom);
+            categorie.initLexique(fichier.toString());
+            depuisFichiers.add(categorie);
+        }
+        ClassifieurLexiques fichiers = new ClassifieurLexiques("fichiers", depuisFichiers);
+        ClassifieurLexiques memoire = ClassifieurLexiques.appris(noms, Set.of());
+        memoire.apprendre(corpus());
+
+        for (Depeche depeche : corpus()) {
+            assertEquals(fichiers.categoriePredite(depeche), memoire.categoriePredite(depeche));
+        }
+    }
 }

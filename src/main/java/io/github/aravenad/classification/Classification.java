@@ -11,7 +11,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -72,38 +74,13 @@ public class Classification {
         //       résultat = pourcentage de dépêches bien classées pour chaque catégorie}
         // Le pourcentage d'une catégorie est calculé sur le nombre de dépêches qui lui appartiennent réellement
         // (et non plus égal au nombre brut de bonnes réponses, qui ne valait un pourcentage que pour 100 dépêches).
-        HashMap<String, Integer> nbDepeches = new HashMap<>();
-        HashMap<String, Integer> nbBienClassees = new HashMap<>();
-        ArrayList<PaireChaineEntier> vScores = new ArrayList<>();
-        try (BufferedWriter fichier = ouvrirEnEcriture(nomFichier)) {
-            for (Depeche depeche : depeches) {
-                vScores.clear();
-                for (Categorie categorie : categories) {
-                    vScores.add(new PaireChaineEntier(categorie.getNom(), categorie.score(depeche)));
-                }
-                String catPredite = UtilitairePaireChaineEntier.chaineMax(vScores);
-                fichier.write(depeche.getId() + ":" + catPredite.toUpperCase() + "\n");
-
-                String catReelle = depeche.getCategorie().toLowerCase();
-                nbDepeches.merge(catReelle, 1, Integer::sum);
-                if (catReelle.equalsIgnoreCase(catPredite)) {
-                    nbBienClassees.merge(catReelle, 1, Integer::sum);
-                }
-            }
-
-            ArrayList<PaireChaineEntier> pourcentages = new ArrayList<>();
-            for (Categorie categorie : categories) {
-                String nom = categorie.getNom().toLowerCase();
-                int total = nbDepeches.getOrDefault(nom, 0);
-                int pourcentage = total == 0 ? 0 : Math.round(100f * nbBienClassees.getOrDefault(nom, 0) / total);
-                pourcentages.add(new PaireChaineEntier(categorie.getNom(), pourcentage));
-                fichier.write(categorie.getNom().toUpperCase() + " : " + pourcentage + "%\n");
-            }
-            fichier.write("MOYENNE : " + Math.round(UtilitairePaireChaineEntier.moyenne(pourcentages)) + "%\n");
-            return pourcentages;
-        } catch (IOException e) {
-            throw new UncheckedIOException("Écriture du classement " + nomFichier + " impossible", e);
+        List<String> noms = new ArrayList<>();
+        for (Categorie categorie : categories) {
+            noms.add(categorie.getNom().toLowerCase());
         }
+        Evaluation evaluation = Evaluation.evaluer(new ClassifieurLexiques("Lexiques", categories), depeches, noms);
+        evaluation.ecrireClassement(nomFichier);
+        return evaluation.pourcentages();
     }
 
     public static HashSet<String> lectureStopWords(String nomFichier) {
@@ -214,14 +191,6 @@ public class Classification {
         return categories;
     }
 
-    private static void afficherResultats(String titre, ArrayList<PaireChaineEntier> pourcentages, String fichier) {
-        System.out.printf("%n%s (détail dans %s)%n", titre, fichier);
-        for (PaireChaineEntier p : pourcentages) {
-            System.out.printf("  %-24s %3d %%%n", p.getChaine(), p.getEntier());
-        }
-        System.out.printf("  %-24s %3d %%%n", "MOYENNE", Math.round(UtilitairePaireChaineEntier.moyenne(pourcentages)));
-    }
-
     public static void main(String[] args) {
         // Usage : [corpus d'apprentissage] [corpus de test] [dossier des résultats]
         String fichierApprentissage = args.length > 0 ? args[0] : "data/corpus/depeches.txt";
@@ -232,31 +201,50 @@ public class Classification {
         System.out.println("Chargement des dépêches...");
         ArrayList<Depeche> apprentissage = lectureDepeches(fichierApprentissage);
         ArrayList<Depeche> test = lectureDepeches(fichierTest);
+        HashSet<String> motsExclus = lectureStopWords("data/stopwords-fr.txt");
         System.out.printf("  %d dépêches d'apprentissage (%s), %d dépêches de test (%s)%n",
                 apprentissage.size(), fichierApprentissage, test.size(), fichierTest);
 
-        // 1. Classement avec les lexiques écrits à la main
-        String sortieManuelle = Paths.get(dossierResultats, "classement-manuel.txt").toString();
-        ArrayList<PaireChaineEntier> resultatsManuels =
-                classementDepeches(test, chargerCategories("data/lexiques"), sortieManuelle);
-        afficherResultats("Lexiques manuels", resultatsManuels, sortieManuelle);
-
-        // 2. Génération des lexiques à partir du corpus d'apprentissage, une catégorie par thread
+        // Génération des fichiers lexiques à partir du corpus d'apprentissage, une catégorie par thread
         long debut = System.currentTimeMillis();
-        HashSet<String> motsExclus = lectureStopWords("data/stopwords-fr.txt");
         CATEGORIES.parallelStream().forEach(nom -> generationLexique(
                 apprentissage, nom, motsExclus, Paths.get(dossierLexiquesAuto, nom + ".txt").toString()));
-        long dureeGeneration = System.currentTimeMillis() - debut;
+        System.out.printf("  lexiques générés dans %s en %d ms%n", dossierLexiquesAuto, System.currentTimeMillis() - debut);
 
-        // 3. Classement du corpus de test avec les lexiques générés (une fois leur écriture terminée)
-        debut = System.currentTimeMillis();
-        String sortieAuto = Paths.get(dossierResultats, "classement-auto.txt").toString();
-        ArrayList<PaireChaineEntier> resultatsAuto =
-                classementDepeches(test, chargerCategories(dossierLexiquesAuto), sortieAuto);
-        long dureeClassement = System.currentTimeMillis() - debut;
-        afficherResultats("Lexiques générés automatiquement", resultatsAuto, sortieAuto);
+        // Comparaison des approches : apprentissage sur le premier corpus, évaluation sur le second
+        LinkedHashMap<String, Classifieur> approches = new LinkedHashMap<>();
+        approches.put("lexiques-manuels", ClassifieurLexiques.manuels(CATEGORIES, "data/lexiques"));
+        approches.put("lexiques-generes", new ClassifieurLexiques("Lexiques générés", chargerCategories(dossierLexiquesAuto)));
+        approches.put("bayes-mots", BayesNaif.surMots(motsExclus));
+        approches.put("bayes-ngrammes", BayesNaif.surNGrammes());
 
-        System.out.printf("%nTemps d'exécution : génération des lexiques %d ms, classement %d ms.%n",
-                dureeGeneration, dureeClassement);
+        System.out.printf("%n%-26s", "Réussite sur le test");
+        for (String categorie : CATEGORIES) {
+            System.out.printf(" %7.7s", categorie);
+        }
+        System.out.printf(" %8s %8s%n", "MOYENNE", "temps");
+        Evaluation meilleure = null;
+        String nomMeilleure = null;
+        for (Map.Entry<String, Classifieur> approche : approches.entrySet()) {
+            Classifieur classifieur = approche.getValue();
+            debut = System.currentTimeMillis();
+            classifieur.apprendre(apprentissage);
+            Evaluation evaluation = Evaluation.evaluer(classifieur, test, CATEGORIES);
+            long duree = System.currentTimeMillis() - debut;
+            evaluation.ecrireClassement(Paths.get(dossierResultats, "classement-" + approche.getKey() + ".txt").toString());
+
+            System.out.printf("%-26s", classifieur.nom());
+            for (int i = 0; i < CATEGORIES.size(); i++) {
+                System.out.printf(" %6.1f%%", evaluation.reussite(i));
+            }
+            System.out.printf(" %7.1f%% %6d ms%n", evaluation.moyenne(), duree);
+            if (meilleure == null || evaluation.moyenne() > meilleure.moyenne()) {
+                meilleure = evaluation;
+                nomMeilleure = classifieur.nom();
+            }
+        }
+
+        System.out.printf("%nMatrice de confusion, %s :%n%s", nomMeilleure, meilleure.matriceConfusion());
+        System.out.printf("%nClassements détaillés dans %s/classement-*.txt%n", dossierResultats);
     }
 }

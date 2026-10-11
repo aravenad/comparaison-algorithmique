@@ -35,7 +35,6 @@ public class Categorie {
         // Format attendu : une entrée « mot:poids » par ligne. Les mots sont mis en minuscules, comme ceux des
         // dépêches, sinon les entrées « France », « PIB », « NASA »… des lexiques manuels ne seraient jamais trouvées.
         ArrayList<PaireChaineEntier> nouveauLexique = new ArrayList<>();
-        HashMap<String, Integer> nouvelIndex = new HashMap<>();
         try (BufferedReader lecteur = Files.newBufferedReader(Paths.get(nomFichier), StandardCharsets.UTF_8)) {
             String ligne;
             int numeroLigne = 0;
@@ -53,12 +52,20 @@ public class Categorie {
                 String mot = ligne.substring(0, indexDeuxPoints).strip().toLowerCase();
                 int poids = Integer.parseInt(ligne.substring(indexDeuxPoints + 1).strip());
                 nouveauLexique.add(new PaireChaineEntier(mot, poids));
-                nouvelIndex.merge(mot, poids, Integer::sum);
             }
         } catch (IOException e) {
             throw new UncheckedIOException("Lecture du lexique " + nomFichier + " impossible", e);
         }
-        this.lexique = nouveauLexique;
+        setLexique(nouveauLexique);
+    }
+
+    // remplace le lexique de la catégorie, p. ex. par un lexique appris en mémoire (cf. ClassifieurLexiques)
+    public void setLexique(ArrayList<PaireChaineEntier> lexique) {
+        HashMap<String, Integer> nouvelIndex = new HashMap<>();
+        for (PaireChaineEntier paire : lexique) {
+            nouvelIndex.merge(paire.getChaine(), paire.getEntier(), Integer::sum);
+        }
+        this.lexique = lexique;
         this.poidsParMot = nouvelIndex;
     }
 
